@@ -1,0 +1,272 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Forecast-Cockpit Dokumentation</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: einspaltiges Berichtsdokument mit schmaler Kapitelnavigation, Tabellen in eigenen Scroll-Containern */
+:root{
+  --bg:#f5f7fb; --paper:#ffffff; --ink:#15213b; --ink-2:#4b5a75; --line:#dfe5ef;
+  --accent:#1f4fbf; --accent-soft:#e7eefc; --warn:#9a5a06; --warn-soft:#fdf1df; --code-bg:#eef2f8;
+  --f-display:"IBM Plex Serif",Georgia,"Times New Roman",serif;
+  --f-body:"IBM Plex Sans",-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1524; --paper:#161e31; --ink:#e6ebf5; --ink-2:#a7b2c7; --line:#2a3550;
+  --accent:#8db0ff; --accent-soft:#1e2c4d; --warn:#f2bf73; --warn-soft:#3a2b14; --code-bg:#1c2640; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1524; --paper:#161e31; --ink:#e6ebf5; --ink-2:#a7b2c7; --line:#2a3550;
+  --accent:#8db0ff; --accent-soft:#1e2c4d; --warn:#f2bf73; --warn-soft:#3a2b14; --code-bg:#1c2640; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:32px 64px}
+.wrap{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+header{display:flex;flex-direction:column;gap:6px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);font-weight:600}
+h1{font-family:var(--f-display);font-size:30px;line-height:1.2;margin:0;text-wrap:balance}
+h2{font-family:var(--f-display);font-size:21px;margin:0 0 10px;text-wrap:balance}
+h3{font-size:15px;margin:14px 0 6px}
+p,li{max-width:68ch;color:var(--ink)}
+p{margin:0 0 10px}
+.muted{color:var(--ink-2)}
+nav.toc{display:flex;flex-wrap:wrap;gap:6px}
+nav.toc a{font-size:13px;color:var(--accent);background:var(--accent-soft);padding:4px 10px;border-radius:6px;text-decoration:none}
+nav.toc a:hover,nav.toc a:focus-visible{text-decoration:underline;outline:none}
+section{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:20px 22px;min-width:0}
+.tbl{overflow-x:auto;margin:6px 0 12px}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{text-align:left;vertical-align:top;padding:8px 10px;border-bottom:1px solid var(--line)}
+th{font-weight:600;color:var(--ink-2);font-size:12px;letter-spacing:.03em;text-transform:uppercase}
+td.n{font-variant-numeric:tabular-nums;white-space:nowrap}
+pre{font-family:var(--f-mono);font-size:13px;background:var(--code-bg);color:var(--ink);border-radius:8px;padding:12px 14px;overflow-x:auto;line-height:1.55;margin:6px 0 12px}
+code{font-family:var(--f-mono);font-size:.9em;background:var(--code-bg);padding:1px 5px;border-radius:4px}
+.tag{display:inline-block;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--warn);background:var(--warn-soft);border-radius:4px;padding:1px 6px;vertical-align:2px}
+.key{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:4px}
+.key div{border:1px solid var(--line);border-radius:8px;padding:10px 12px;min-width:0}
+.key b{display:block;font-size:20px;font-variant-numeric:tabular-nums;font-family:var(--f-display)}
+.key span{font-size:12.5px;color:var(--ink-2)}
+ul{padding-left:20px;margin:0 0 10px}
+@media (max-width:560px){h1{font-size:24px}section{padding:16px}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Projekt Controlling · Prototyp-Dokumentation</div>
+    <h1>KI-gestütztes Umsatz-Forecast-Dashboard</h1>
+    <p class="muted">Begleitdokument zum klickbaren Prototyp <code>forecast_dashboard.html</code>. Alle Daten sind fiktiv und anonymisiert. Die Publisher heißen Alpha bis Epsilon, die Gesellschaften A bis C.</p>
+    <nav class="toc" aria-label="Kapitel">
+      <a href="#analyse">Analyse</a><a href="#optimierung">Optimierung</a><a href="#aufbau">Aufbau</a><a href="#import">Excel-Import &amp; GuV</a><a href="#chat2">Controlling-Chat</a><a href="#vorschlag">KI-Vorschlag &amp; Freigabe</a><a href="#logik">Berechnungslogik</a><a href="#annahmen">Annahmen</a><a href="#chat">KI-Chat</a><a href="#grenzen">Einschränkungen</a><a href="#code">Code-Struktur</a>
+    </nav>
+  </header>
+
+  <section id="analyse">
+    <h2>Analyse der Projektunterlagen</h2>
+    <div class="tbl"><table>
+      <tr><th>Unterlage</th><th>Ergebnis</th></tr>
+      <tr><td>Masterprompt (PDF)</td><td>Anforderungen an Funktionen, Kennzahlen, Rollen, Design und Qualitätssicherung</td></tr>
+      <tr><td>Themenzettel (PDF)</td><td>Thema, Ausgangslage, sechs Probleme des heutigen Prozesses und das geplante Vorgehen in sechs Schritten</td></tr>
+      <tr><td>Excel-Template (XLSB)</td><td>Reiter: Anleitung, Übersicht, Output, Marken-Reiter, Planzahlen, IST Vorjahr, IST laufendes Jahr. Perioden: IST 2025, FC IV 2026, BUD 2027, Trend I/II</td></tr>
+    </table></div>
+    <h3>Aus dem Template übernommene Logik</h3>
+    <ul>
+      <li>Treiberkette je Werbeform: Reichweite (Video Views bzw. Page Impressions) × AI-Faktor = Possible AIs. Possible AIs × Auslastung = Sold AIs. Sold AIs / 1.000 × TKP = Erlös.</li>
+      <li>Werbeformen: In-Stream (inkl. Spot-Bundle), In-Page, Out-Stream sowie Partner/Affiliate mit Pauschalerlösen. Das Template trennt die Salescluster „AdA“ und „Partner“.</li>
+      <li>Erlöse werden als Agenturnetto (Netto 2) geplant. Eine Abzugslogik von Netto 2 auf Netto 4 enthält das Template nicht.</li>
+      <li>Dimensionen: Gesellschaft → Publisher → Werbeform → Monat, dazu Preistyp (TKP oder pauschal) und Template-Status.</li>
+    </ul>
+    <p class="muted">Echte Marken-, Firmen- und Personennamen aus der Vorlage wurden nicht übernommen.</p>
+  </section>
+
+  <section id="optimierung">
+    <h2>Ausgangslage und Optimierung</h2>
+    <p>Heute pflegen Brandmanager Reichweiten- und Erlösannahmen in vielen einzelnen Excel-Templates. Ein Makro führt sie zusammen, danach werden sie manuell in eine Grob-Planungsdatei kopiert, in einer weiteren Excel-Datei auf SAP-Ebene umgerechnet und per Upload-Datei in SAP übernommen. Das passiert viermal im Jahr, dazu kommen Budget- und fünfjährige Trendplanung.</p>
+    <div class="tbl"><table>
+      <tr><th>Problem heute</th><th>Lösung im Prototyp</th></tr>
+      <tr><td>1. Hoher Aufwand</td><td>Konsolidierung, Überleitung und Upload-Datei entstehen automatisch aus einer Datenbasis</td></tr>
+      <tr><td>2. Viele große, getrennte Excel-Dateien</td><td>Eine zentrale Datenbasis, auf der alle Sichten, Tabellen und der Chat aufbauen</td></tr>
+      <tr><td>3. Wiederholtes manuelles Übertragen</td><td>Netto 2 → Netto 4 und SAP-Datensätze werden berechnet statt kopiert</td></tr>
+      <tr><td>4. Dateiabstürze, hohe Fehleranfälligkeit</td><td>Automatische Prüfungen auf fehlende Templates und Werte, Plausibilität, Zuordnung und Vorjahresabweichung</td></tr>
+      <tr><td>5. Szenarien sind aufwendig</td><td>Regler und Chat rechnen Szenarien in Sekunden auf Netto 2 und Netto 4 durch</td></tr>
+      <tr><td>6. GuV-Wirkung wird spät sichtbar</td><td>Netto 4 (GuV-wirksam) ist jederzeit umschaltbar, auch im Szenario</td></tr>
+    </table></div>
+    <h3>Vorgehen in sechs Schritten</h3>
+    <div class="tbl"><table>
+      <tr><th>Schritt</th><th>Umsetzung im Prototyp</th></tr>
+      <tr><td>1. Daten zusammenführen</td><td>Templates aller Publisher und Werbeformen in einer Datenbasis, Template-Matrix und Konsolidierung</td></tr>
+      <tr><td>2. Daten prüfen</td><td>Bereich Datenqualität mit Ampellogik und Detailansicht je Auffälligkeit</td></tr>
+      <tr><td>3. Forecast vorschlagen</td><td>KI-Forecast-Vorschlag für offene Monate aus Vorjahresmonat, Ist-Trend und Reichweitenannahme, im Vergleich zu den Template-Werten</td></tr>
+      <tr><td>4. In die GuV überleiten</td><td>Waterfall Netto 2 → Netto 4, Überleitungstabelle mit Rechenkontrolle, SAP-Upload-Datei</td></tr>
+      <tr><td>5. Abweichungen und Szenarien zeigen</td><td>Forecast vs. Budget und Vorjahr, Szenario-Regler, Chat mit „Was passiert, wenn …?“ und Management-Kommentar</td></tr>
+      <tr><td>6. Prüfen und freigeben</td><td>Freigabe-Workflow Brand → Controlling → Geschäftsführung. Der Upload ist erst nach allen drei Freigaben möglich</td></tr>
+    </table></div>
+  </section>
+
+  <section id="aufbau">
+    <h2>Aufbau des Dashboards</h2>
+    <p>Dreispaltiges Layout: Navigation links, Controlling-Dashboard in der Mitte, KI-Chat rechts. Darüber liegt eine Kopfzeile mit Titel, Forecast-Zeitraum, Version, Filtern und Status. Darunter steht der Pflichthinweis zum KI-Prototyp.</p>
+    <div class="tbl"><table>
+      <tr><th>Bereich</th><th>Inhalte</th></tr>
+      <tr><td><b>Übersicht</b></td><td>Management-Sicht: 6 Kennzahlen (Forecast, Budget, Abweichung € und %, Netto 4, Template-Vollständigkeit), Forecast vs. Budget je Monat, wesentliche Risiken &amp; Auffälligkeiten, Jahresverlauf, größte Abweichungen, Umsatz nach Publisher und Gesellschaft. Ampelübersicht je Publisher aufklappbar</td></tr>
+      <tr><td><b>Forecast</b></td><td>Monatsverlauf Forecast/Budget/Vorjahr, Waterfall Netto 2 → Netto 4, Reichweiten, TKP-Entwicklung, InStream-Auslastung, KI-Forecast-Vorschlag für offene Monate, Publisher × Werbeform, Gesellschaften, Monatsübersicht, interaktive Detailtabelle (sortierbar, durchsuchbar, Klick filtert)</td></tr>
+      <tr><td><b>Szenarien</b></td><td>Regler für Auslastung (relativ oder Prozentpunkte), TKP und Reichweite. Schnellaktionen ±5 %, Wirkungsbereich (alle oder nur offene Monate), Ergebnis-Kennzahlen, monatliche Auswirkungen, Vergleich Basis/Alternativ, betroffene Publisher</td></tr>
+      <tr><td><b>Datenqualität</b></td><td>Template-Eingang (Donut und Matrix), Vollständigkeit, fehlende und unplausible Werte, Vorjahresabweichung über 10 %, Zuordnungsfehler, auffällige TKP und Auslastungen. Publisher-Tabelle mit Ampel, jede Auffälligkeit ist anklickbar</td></tr>
+      <tr><td><b>Excel-Import &amp; SAP</b></td><td>Drei Reiter: 1) Excel-Import mit Drag &amp; Drop, Blatt- und Spaltenerkennung, Mapping und Validierung, 2) GuV-Überleitung mit Prozessfluss in acht Schritten und GuV-Staffel je Gesellschaft, Monat und Publisher, 3) SAP-Upload mit Validierung, Vorschau, CSV, Freigabe-Workflow und simuliertem Upload</td></tr>
+      <tr><td><b>Methodik &amp; Annahmen</b></td><td>Kennzahlenübersicht aus der Analyse, Formeln, Annahmen, enthaltene Datenqualitätsfälle, Grenzen des Prototyps</td></tr>
+    </table></div>
+    <p><b>Globale Filter:</b> Version (Budget, FC I–IV), Monat (Mehrfachauswahl, Quartale), Publisher, Gesellschaft (auch „Nicht zugeordnet“) und Wertebene Netto 2 oder Netto 4. Dazu kommt „Filter zurücksetzen“. Alle Kacheln, Diagramme, Tabellen und Chat-Antworten reagieren darauf.</p>
+  </section>
+
+  <section id="import">
+    <h2>Excel-Import und GuV-Überleitung</h2>
+    <p>Im Bereich „Excel-Import &amp; SAP“ lässt sich eine Planungsdatei einlesen. Sie wird zur Datenbasis aller Bereiche: Übersicht, Forecast-Analyse, Szenarien, Datenqualität, GuV, SAP-Upload und Chat zeigen danach die Importdaten.</p>
+    <h3>Ablauf</h3>
+    <div class="tbl"><table>
+      <tr><th>Schritt</th><th>Funktion</th></tr>
+      <tr><td>Hochladen</td><td>Drag &amp; Drop oder Dateiauswahl (.xlsx, .xls, .csv), Dateiname und Status, neue Datei, Import zurücksetzen. Eine Beispieldatei mit Demo-Daten und eingebauten Fehlern lässt sich direkt laden.</td></tr>
+      <tr><td>Analysieren</td><td>Alle Tabellenblätter werden erkannt, das passendste automatisch gewählt. Die Kopfzeile wird gesucht, Lang- und Querformat (Monate als Spalten) werden unterschieden.</td></tr>
+      <tr><td>Zuordnen</td><td>Spalten werden über Synonyme erkannt (Publisher, Gesellschaft, Monat, Jahr, Werbeform, Netto 2, Budget, Vorjahr, Skonto, Agenturkosten, Provisionen, weitere Abzüge, Netto 4, Kontierung). Jede Zuordnung ist als „sicher“, „bitte prüfen“ oder „manuell“ markiert und per Auswahlfeld änderbar.</td></tr>
+      <tr><td>Prüfen</td><td>Fehlende Werte, Duplikate, falsche Zahlenformate, unbekannte Publisher, fehlende Gesellschaft, ungültige Zeiträume, unplausible Umsätze (negativ, Ausreißer) und fehlerhafte Netto-2-/Netto-4-Werte – mit Ampel je Prüfung und Liste der Datensätze. Fehlerhafte Datensätze werden nie übernommen, Warnungen nur nach Bestätigung.</td></tr>
+      <tr><td>Übernehmen</td><td>Konsolidierung nach Publisher und Gesellschaft, Netto 2, Abzüge, Netto 4, GuV-Umsatzerlöse und SAP-Datensätze werden automatisch erzeugt.</td></tr>
+    </table></div>
+    <h3>Herkunft der Werte</h3>
+    <ul>
+      <li>Abzüge aus der Datei werden übernommen. Fehlen sie, berechnet das Dashboard sie mit den Annahmesätzen und kennzeichnet sie als „berechnet“. Enthält die Datei nur Netto 4, gilt Netto 2 − Netto 4 als „Abzüge laut Datei“.</li>
+      <li>Budget und Vorjahr enthalten meist nur Netto 2. Ihr Netto 4 wird mit den Abzugsquoten der jeweiligen Forecast-Zeile berechnet, damit der Vergleich stimmig bleibt.</li>
+      <li>SAP-Kontierung (Buchungskreis, Erlöskonto, Profitcenter) erscheint nur, wenn sie in der Datei steht. Sonst steht „nicht hinterlegt“ – es werden keine SAP-Konten erfunden.</li>
+    </ul>
+    <h3>GuV-Ansicht</h3>
+    <p>Prozessfluss in acht Schritten (Import, Prüfung, Konsolidierung, Netto 2, Abzüge, Netto 4, GuV, SAP-Datei), Kennzahlen und eine GuV-Staffel je Gesellschaft mit Spalte „Herkunft“. Dazu kommen Umsatzerlöse je Monat und je Publisher sowie die Abweichung zu Budget und Vorjahr.</p>
+  </section>
+
+  <section id="chat2">
+    <h2>Controlling-Chat: Ursachen und Maßnahmen</h2>
+    <p>Längere Antworten sind gegliedert in <b>1 Ergebnis · 2 Ursachen · 3 Handlungsempfehlung · 4 Finanzielle Auswirkungen</b>.</p>
+    <ul>
+      <li><b>Abweichungsanalyse</b> („Warum liegen wir unter unserem Budget?“): absolute und prozentuale Abweichung, größte negative Publisher mit Haupttreiber, betroffene Gesellschaften und Monate, Zerlegung in Reichweiten-, Auslastungs-, TKP- und Pauschaleffekt.</li>
+      <li><b>Ursachen</b> sind gekennzeichnet als „nachgewiesen“ (aus Daten berechnet), „mögliche Erklärung“ (z. B. fehlende Werte, ausstehende Templates) oder „allgemein“ (nicht aus Daten belegbar).</li>
+      <li><b>Handlungsempfehlungen</b> werden je Ursache abgeleitet: unverkauftes Inventar und Auslastung +3/+5 Pp, Preisvergleich und TKP +5 %, Reichweitenanalyse, Nachtrag fehlender Werte, Priorisierung ausstehender Templates nach Budgetvolumen.</li>
+      <li><b>Finanzielle Auswirkungen</b> berechnet die Szenariofunktion des Dashboards je Maßnahme auf Netto 2, Netto 4 und GuV. In Forecast-Versionen gilt das für die offenen Monate.</li>
+      <li><b>Aktions-Buttons</b>: Auslastung +5 Pp, TKP +5 %, Publisher genauer analysieren, Auswirkung auf die GuV berechnen, alternative Forecast-Variante erstellen, Maßnahmen für die Geschäftsführung zusammenfassen.</li>
+      <li><b>Mehrstufige Dialoge</b>: „Wie können wir unsere Umsätze verbessern?“ nennt den größten Treiber und fragt nach Hebel, Höhe und Publisher. Auch Kommentar- und Szenariowünsche ohne Angaben führen zu Rückfragen.</li>
+      <li><b>Kommentare</b> (kopierbar, rollenabhängig): Monats-, Forecast-, Budgetabweichungs-, Publisher- und Gesellschaftskommentar sowie Management Summary.</li>
+      <li><b>Forecast-Varianten</b> aus Maßnahmen oder Szenarien erscheinen als eigene Version im Versionsfilter. Die Ausgangsversion bleibt unverändert.</li>
+    </ul>
+  </section>
+
+  <section id="vorschlag">
+    <h2>KI-Forecast-Vorschlag und Freigabe</h2>
+    <h3>Forecast vorschlagen (Bereich Forecast)</h3>
+    <p>Für die offenen Monate rechnet der Prototyp einen eigenen Vorschlag und stellt ihn den Template-Werten der Brandmanager gegenüber.</p>
+<pre>Auslastung'  = Auslastung Vorjahresmonat + Δ Auslastung Ist ggü. VJ (Prozentpunkte)
+TKP'         = TKP Vorjahresmonat × (1 + Δ eTKP Ist ggü. VJ)
+Reichweite   = Annahme aus dem Template
+Pauschal     = Vorjahresmonat × Ist-Wachstum
+Erlös        = Reichweite × AI-Faktor × Auslastung' / 1.000 × TKP'</pre>
+    <p>Weicht ein Publisher um mehr als 5 % ab, markiert der Prototyp das zur Plausibilisierung. Leere Felder im Template füllt der Vorschlag sichtbar auf. Im FC IV fallen so Beta (Auslastung über 100 % im November) und Gamma (fehlender TKP im Dezember) auf. Der Vorschlag ist immer ein Entwurf und ersetzt die Planung nicht.</p>
+    <h3>Prüfen und freigeben (Bereich SAP-Upload)</h3>
+    <ul>
+      <li>Reihenfolge: Brand bestätigt die Planannahmen, Controlling prüft Datenqualität und Überleitung, die Geschäftsführung gibt Forecast und Upload frei.</li>
+      <li>Jede Stufe kann mit Kommentar freigeben oder zurückweisen. Eine Zurückweisung setzt die nachfolgenden Stufen zurück.</li>
+      <li>Bei kritischen Prüfpunkten kann das Controlling nur „mit Vorbehalt“ freigeben.</li>
+      <li>Der simulierte SAP-Upload ist erst nach allen drei Freigaben möglich. Freigaben gelten je Forecast-Version.</li>
+    </ul>
+  </section>
+
+  <section id="logik">
+    <h2>Kennzahlen und Berechnungslogik</h2>
+<pre>Possible AIs        = Reichweite × AI-Faktor
+Sold AIs            = Possible AIs × Auslastung
+Auslastung          = Sold AIs / Possible AIs × 100        (Possible AIs = 0 → „—“)
+Erlös Netto 2       = Sold AIs / 1.000 × TKP               (In-Stream, In-Page, Out-Stream)
+Erlös Netto 2       = Pauschalerlös                        (Partner &amp; Affiliate)
+eTKP                = Σ AI-Erlöse / Σ Sold AIs × 1.000
+Netto 4             = Netto 2 − Skonto − Agenturkosten − Provisionen − Partner-Ausschüttung
+Abweichung absolut  = Forecast − Budget
+Abweichung relativ  = (Forecast − Budget) / Budget × 100</pre>
+    <ul>
+      <li>Abhängige Werte werden nie gespeichert, sondern immer aus den Planungstreibern berechnet. So entstehen keine widersprüchlichen Zahlen.</li>
+      <li>Auslastung und eTKP werden gewichtet aus Summen berechnet. Es werden keine Prozentwerte gemittelt.</li>
+      <li>Page Impressions werden einmal gezählt, obwohl In-Page und Out-Stream dieselbe Basis nutzen.</li>
+      <li>Ist-Monate stammen aus dem Reporting (FC I: Jan–Feb, FC II: Jan–Mai, FC III: Jan–Aug, FC IV: Jan–Okt). Offene Monate stammen aus den Templates.</li>
+      <li>Der Chat zerlegt die Abweichung der AI-Erlöse nach der logarithmischen Methode in Reichweiten-, Auslastungs- und TKP-Effekt. Dazu kommt der Effekt der Pauschalerlöse.</li>
+    </ul>
+    <h3>Kontrollrechnungen (im Browser geprüft)</h3>
+    <div class="tbl"><table>
+      <tr><th>Prüfung</th><th>Ergebnis</th></tr>
+      <tr><td>Erlös = Sold AIs / 1.000 × TKP je Datensatz, unabhängig nachgerechnet</td><td class="n">Abweichung 0</td></tr>
+      <tr><td>Netto 2 − Σ Abzüge = Netto 4 je Datensatz</td><td class="n">Abweichung 0</td></tr>
+      <tr><td>Σ Monate = Jahr, Σ Publisher = Gesamt (alle 6 Perioden)</td><td class="n">&lt; 0,0000001 €</td></tr>
+      <tr><td>Szenario TKP −5 % → AI-Erlöse × 0,95</td><td class="n">0,9500</td></tr>
+      <tr><td>Summe der SAP-Datensätze (N4) = Netto 4 der Konsolidierung</td><td class="n">Abweichung 0</td></tr>
+      <tr><td>Import Beispieldatei: Σ übernommene Datensätze Netto 2 / Netto 4 = Dashboard-Werte</td><td class="n">Abweichung 0</td></tr>
+      <tr><td>Import Querformat-Blatt: Forecast, Budget, Vorjahr = Demo-Daten</td><td class="n">77,69 / 80,53 / 76,82 Mio. €</td></tr>
+      <tr><td>Forecast-Variante aus Maßnahmen: Δ Netto 2 / Δ Netto 4 = Summe der Maßnahmeneffekte</td><td class="n">Abweichung 0</td></tr>
+      <tr><td>JavaScript-Fehler in allen Bereichen, Versionen und Filtern</td><td class="n">keine</td></tr>
+    </table></div>
+  </section>
+
+  <section id="annahmen">
+    <h2>Annahmen <span class="tag">fiktiv</span></h2>
+    <p>Im Dashboard sind diese Werte als „Annahme“ gekennzeichnet.</p>
+    <div class="tbl"><table>
+      <tr><th>Annahme</th><th>Wert</th></tr>
+      <tr><td>Skonto</td><td class="n">2,0 % auf Netto 2</td></tr>
+      <tr><td>Agenturkosten</td><td class="n">3,0 % auf Netto 2</td></tr>
+      <tr><td>Provisionen</td><td class="n">1,5 % auf Netto 2</td></tr>
+      <tr><td>Partner-Ausschüttung</td><td class="n">55 % der Partner- und Affiliate-Erlöse</td></tr>
+      <tr><td>Fallback bei fehlendem Template</td><td>offene Monate aus der Vorversion, als Warnung markiert</td></tr>
+      <tr><td>Übernahme der Ist-Abweichung in Forecast-Monate</td><td class="n">80 %</td></tr>
+      <tr><td>Ampel Budget</td><td>grün ≥ −2 %, gelb bis −5 %, rot darunter</td></tr>
+      <tr><td>Prüfgrenzen Datenqualität</td><td>Vorjahr ±10 % (Vorgabe), TKP ±20 % ggü. Vorjahresmonat, Auslastung &lt; 30 % oder &gt; 90 %</td></tr>
+      <tr><td>SAP-Kontierung</td><td>nicht hinterlegt – Buchungskreis, Erlöskonto und Profitcenter werden nicht erfunden, sondern nur aus einer Importdatei übernommen</td></tr>
+    </table></div>
+    <h3>Eingebaute Datenqualitätsfälle (FC IV)</h3>
+    <p>Zur Demonstration enthält FC IV drei ausstehende Templates (17 von 20), zwei Templates in Prüfung, einen fehlenden TKP (Gamma In-Page, Dezember), eine Auslastung über 100 % (Beta In-Stream, November), einen TKP-Sprung (Epsilon In-Stream, November und Dezember) und eine fehlende Gesellschaftszuordnung (Gamma Out-Stream).</p>
+    <h3>Kernaussage der fiktiven Daten (FC IV, Netto 2)</h3>
+    <div class="key">
+      <div><b>77,69 Mio. €</b><span>Forecast</span></div>
+      <div><b>80,53 Mio. €</b><span>Budget</span></div>
+      <div><b>−3,5 %</b><span>Abweichung zum Budget (−2,84 Mio. €)</span></div>
+      <div><b>69,57 Mio. €</b><span>Netto 4</span></div>
+    </div>
+    <p style="margin-top:12px">Der Forecast liegt 1,1 % über dem Vorjahr. Gamma (TKP-Druck) und Delta (Auslastung und Reichweite) belasten das Ergebnis. Alpha und Epsilon liegen über Plan.</p>
+  </section>
+
+  <section id="chat">
+    <h2>Funktionen des KI-Chats</h2>
+    <ul>
+      <li><b>Simuliert und regelbasiert</b>, ohne externe KI-API. Der Chat erkennt Absicht, Publisher, Monate und Quartale, Prozentwerte, die Richtung (sinkt/steigt) sowie relative Änderung vs. Prozentpunkte.</li>
+      <li><b>Rollen:</b> Brand/Fachabteilung (verständlich, ohne Fachjargon), Controlling (Rechenwege, Treiberzerlegung, Quellen), Geschäftsführung (kurz, mit Ampel und Entscheidung).</li>
+      <li><b>Themen:</b> Umsatz und Budgetstatus, Abweichungen, Vorjahresabweichung über 10 %, Netto-Überleitung und Abzüge, Reichweite, Auslastung, TKP, beste und schwächste Monate, Templates, Datenqualität, Risiken und Handlungsbedarf, Szenarien (auch kombiniert), Stresstest, KI-Forecast-Vorschlag, Freigabestand, Management-Kommentar, Begriffserklärungen je Rolle.</li>
+      <li><b>Quellen</b> stehen unter jeder Antwort. Bei abgeleiteten Kennzahlen steht zusätzlich die Formel dabei.</li>
+      <li><b>Szenario-Antworten</b> zeigen Netto 2 und Netto 4 vorher und nachher, die Veränderung in € und % sowie die Budgetabweichung. Sie tragen den Hinweis „Entwurf – noch nicht durch Controlling und Geschäftsführung freigegeben.“</li>
+      <li><b>Transparenz:</b> Fragen zu Kennzahlen außerhalb der Datenbasis (z. B. EBIT) beantwortet der Chat nicht, sondern sagt das offen. Er erfindet keine Zahlen.</li>
+    </ul>
+  </section>
+
+  <section id="grenzen">
+    <h2>Technische Einschränkungen</h2>
+    <ul>
+      <li>Klickbarer Prototyp in einer einzigen HTML-Datei (HTML5, CSS3, Vanilla JavaScript). Diagramme sind eigene SVG-Komponenten, ohne Chart-Bibliothek.</li>
+      <li>Keine Persistenz: Beim Neuladen werden Filter, Szenarien und Chat zurückgesetzt.</li>
+      <li>Excel-Import im Browser (SheetJS über cdnjs): .xlsx/.xls brauchen eine Internetverbindung zum Laden der Bibliothek, CSV funktioniert offline. Importdaten bleiben nur bis zum Neuladen erhalten.</li>
+      <li>Keine echte SAP-Anbindung. Validierung und Upload sind simuliert. In der Online-Ansicht blockiert der Browser Downloads – die CSV wird dann zum Kopieren angezeigt.</li>
+      <li>Der Chat ist eine simulierte KI: regelbasierte Analyse auf den Dashboard-Daten, keine externe KI-API. Er versteht Schlüsselwörter und feste Muster, keine freie Sprache.</li>
+    </ul>
+  </section>
+
+  <section id="code">
+    <h2>Code-Struktur</h2>
+    <div class="tbl"><table>
+      <tr><th>Baustein</th><th>Aufgabe</th></tr>
+      <tr><td><code>DATA</code></td><td>Zentrales Datenobjekt mit fiktiven Treibern, Versionen, Abzügen, Templates und Prüfgrenzen</td></tr>
+      <tr><td><code>buildDataset()</code>, <code>calcRow()</code></td><td>Datenaufbau und zentrale Berechnung</td></tr>
+      <tr><td><code>rowsFor()</code>, <code>agg()</code>, <code>kpis()</code></td><td>Filter und Aggregation</td></tr>
+      <tr><td><code>runScenario()</code>, <code>runQualityChecks()</code>, <code>sapRecords()</code></td><td>Szenarien, Datenqualität, SAP-Datensätze</td></tr>
+      <tr><td><code>barChart()</code> … <code>waterfallChart()</code></td><td>Diagramme</td></tr>
+      <tr><td><code>answer()</code>, <code>ans…()</code></td><td>KI-Chat: Erkennung der Frage und Antwortbausteine</td></tr>
+    </table></div>
+  </section>
+</div>
+
+</body></html>
