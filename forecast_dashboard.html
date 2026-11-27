@@ -77,6 +77,25 @@ select.sel:focus,.ms-btn:focus{outline:2px solid var(--blue-2);outline-offset:1p
 .nav-foot{margin-top:auto;font-size:11px;color:#8c8c8c;padding:10px;line-height:1.5}
 .process{padding:4px 10px 0;font-size:11.5px;color:#a6a6a6;line-height:1.55}
 .process ol{margin:4px 0 0;padding-left:16px}
+/* Templates je Publisher in der Navigation */
+.tpl-title{display:flex;align-items:center;justify-content:space-between}
+.tpl-title span{font-weight:600;color:#a6a6a6;letter-spacing:0}
+.tpl-nav{display:flex;flex-direction:column;gap:1px}
+.nav .tpl-pub,.nav .tpl-item{display:flex;align-items:center;gap:8px;width:100%;border:0;background:transparent;color:#d9d9d9;cursor:pointer;text-align:left;border-radius:7px}
+.nav .tpl-pub{padding:6px 10px;font-size:12.5px;font-weight:500}
+.nav .tpl-pub .chev{width:10px;font-size:10px;color:#8c8c8c;transition:transform .15s}
+.nav .tpl-pub.open .chev{transform:rotate(90deg)}
+.nav .tpl-pub .cnt{margin-left:auto;font-size:10.5px;color:#8c8c8c;font-variant-numeric:tabular-nums}
+.nav .tpl-pub.on{color:#fff;font-weight:600}
+.tpl-items{display:none;flex-direction:column;gap:1px;margin:1px 0 5px 19px;border-left:1px solid #333;padding-left:6px}
+.tpl-pub.open+.tpl-items{display:flex}
+.nav .tpl-item{padding:5px 8px;font-size:12px;color:#bfbfbf}
+.nav .tpl-pub:hover,.nav .tpl-item:hover{background:var(--navy-2);color:#fff}
+.nav .tpl-item.on{background:var(--navy-2);color:#fff;font-weight:600;box-shadow:inset 2px 0 0 var(--pink)}
+.nav .tpl-item .dot,.nav .tpl-pub .dot{width:7px;height:7px}
+.nav .process button{display:inline;width:auto;padding:2px 6px;margin-left:-6px;border-radius:5px;font-size:11.5px;color:#a6a6a6}
+.nav .process button:hover{background:var(--navy-2);color:#fff}
+.nav .process button.on{color:#fff;font-weight:600}
 /* Main */
 .main{overflow:auto;padding:16px 18px 40px;min-width:0}
 .page{display:none}
@@ -242,7 +261,7 @@ body.chat-open .chat{display:flex;animation:chatIn .18s ease-out}
   .topbar>*,.disclaimer>*{min-width:0;max-width:100%}
   .nav{flex-direction:row;overflow-x:auto;padding:8px;gap:4px}
   .nav button{width:auto;white-space:nowrap}
-  .nav-title,.nav-sep,.nav-foot,.process{display:none}
+  .nav-title,.nav-sep,.nav-foot,.process,.tpl-nav{display:none}
   .g2{grid-template-columns:1fr}
   .kmap{grid-template-columns:1fr 1fr}
   .tmatrix{grid-template-columns:90px repeat(4,minmax(0,1fr))}
@@ -375,15 +394,18 @@ body.chat-open .chat-fab{background:var(--navy);box-shadow:0 8px 24px rgba(0,0,0
     <button data-page="sap"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 15V4M7 9l5-5 5 5"/><path d="M4 15v4a1 1 0 001 1h14a1 1 0 001-1v-4"/></svg>Excel-Import &amp; SAP</button>
     <div class="nav-sep"></div>
     <button data-page="method"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg>Methodik &amp; Annahmen</button>
+    <div class="nav-sep"></div>
+    <div class="nav-title tpl-title">Templates <span id="tplNavCount"></span></div>
+    <div class="tpl-nav" id="tplNav" aria-label="Templates je Publisher und Werbeform"></div>
     <div class="process">
       <div class="nav-title" style="padding-left:0">Prozess</div>
       <ol>
-        <li>Templates (Brandmanager)</li>
-        <li>Konsolidierung</li>
-        <li>Netto 2 → Netto 4</li>
-        <li>SAP-Upload-Datei</li>
-        <li>GuV-Umsatzerlöse</li>
-        <li>Soll-/Forecast-Vergleich</li>
+        <li><button type="button" data-step="quality">Templates (Brandmanager)</button></li>
+        <li><button type="button" data-step="sap:upload">Konsolidierung</button></li>
+        <li><button type="button" data-step="sap:guv">Netto 2 → Netto 4</button></li>
+        <li><button type="button" data-step="sap:upload">SAP-Upload-Datei</button></li>
+        <li><button type="button" data-step="sap:guv">GuV-Umsatzerlöse</button></li>
+        <li><button type="button" data-step="forecast">Soll-/Forecast-Vergleich</button></li>
       </ol>
     </div>
     <div class="nav-foot">Klickbarer Prototyp für ein Controlling-Projekt.<br>Keine produktive Systemanbindung.</div>
@@ -3084,13 +3106,73 @@ function initChat() {
    ===================================================================== */
 const PAGES = { overview: renderOverview, forecast: renderForecast, scenario: renderScenario, quality: renderQuality, sap: renderSap, method: renderMethod };
 function syncNav() { $$('#nav button[data-page]').forEach(b => b.classList.toggle('on', b.dataset.page === S.page)); $$('.page').forEach(p => p.classList.toggle('on', p.id === 'page-' + S.page)); }
+/* ---------- Navigation: Templates je Publisher × Werbeform, einzeln anklickbar ---------- */
+S.navOpen = new Set(); S.tplSel = null;
+function navQuality() { const save = S.pubs; S.pubs = new Set(pubsInVersion()); try { return runQualityChecks(); } finally { S.pubs = save; } }
+function renderTplNav() {
+  const el = $('#tplNav'); if (!el) return;
+  const q = navQuality(), tpl = q.tpl;
+  const sevOf = t => { const iss = q.issues.filter(i => i.pub === t.p.id && i.fmt === t.f.id && i.type !== 'template' && i.type !== 'review');
+    return t.status === 'ausstehend' || iss.some(i => i.sev === 'r') ? 'r' : t.status === 'in Prüfung' || iss.length ? 'y' : 'g'; };
+  const pubs = [...new Map(tpl.map(t => [t.p.id, t.p])).values()];
+  el.innerHTML = pubs.map(p => {
+    const ts = tpl.filter(t => t.p.id === p.id), rec = ts.filter(t => t.status !== 'ausstehend').length, sv = ts.map(sevOf);
+    const ps = sv.includes('r') ? 'r' : sv.includes('y') ? 'y' : 'g', open = S.navOpen.has(p.id), on = S.pubs.size === 1 && S.pubs.has(p.id);
+    return `<button type="button" class="tpl-pub ${open ? 'open' : ''} ${on ? 'on' : ''}" data-tp="${p.id}" aria-expanded="${open}"${tipAttr(`<b>${esc(p.name)}</b>${p.segment ? ' · ' + esc(p.segment) : ''}<br>${rec} von ${ts.length} Templates eingegangen<br><i>Klick: Werbeformen anzeigen und nach ${esc(p.name)} filtern</i>`)}><span class="chev">▶</span><span class="dot ${ps}"></span>${esc(p.name)}<span class="cnt">${rec}/${ts.length}</span></button>
+      <div class="tpl-items">${ts.map((t, k) => { const sel = S.tplSel && S.tplSel.pub === p.id && S.tplSel.fmt === t.f.id;
+        return `<button type="button" class="tpl-item ${sel ? 'on' : ''}" data-tp="${p.id}" data-tf="${t.f.id}"${tipAttr(`<b>${esc(p.name)} – ${esc(t.f.name)}</b><br>Status: ${esc(t.status)}${t.fallback ? ' (Fallback ' + esc(VER[t.fallback].label) + ')' : ''}${t.updated ? '<br>Aktualisiert: ' + esc(t.updated) : ''}<br><i>Klick: Template öffnen</i>`)}><span class="dot ${sv[k]}"></span>${esc(t.f.name)}</button>`; }).join('')}</div>`;
+  }).join('');
+  $('#tplNavCount').textContent = `${q.received}/${q.total}`;
+  $$('#tplNav .tpl-pub').forEach(b => b.onclick = () => {
+    const id = b.dataset.tp;
+    if (S.navOpen.has(id) && S.pubs.size === 1 && S.pubs.has(id)) { S.navOpen.delete(id); S.tplSel = null; S.pubs = new Set(pubsInVersion()); MS.pub.render(); renderAll(); toast('Filter: alle Publisher'); }
+    else { S.navOpen.add(id); setPublisherFilter(id); }
+  });
+  $$('#tplNav .tpl-item').forEach(b => b.onclick = () => {
+    const pub = b.dataset.tp, fmt = b.dataset.tf; S.tplSel = { pub, fmt }; S.navOpen.add(pub);
+    if (S.pubs.size === 1 && S.pubs.has(pub)) renderTplNav(); else setPublisherFilter(pub);
+    openTemplate(pub, fmt);
+  });
+}
+/* Template-Detailansicht: Monatswerte, Status, Hinweise */
+function openTemplate(pub, fmt) {
+  const p = PUB[pub], f = FMT[fmt], V = VER[S.version], ai = f.type === 'ai';
+  const rows = ROWS.filter(r => r.v === S.version && r.pub === pub && r.fmt === fmt && S.months.has(r.m)).sort((a, b) => a.m - b.m);
+  const bud = new Map(ROWS.filter(r => r.v === BUDV() && r.pub === pub && r.fmt === fmt).map(r => [r.m, r]));
+  const t = navQuality().tpl.find(x => x.key === pub + '-' + fmt) || { status: '—' };
+  const issues = navQuality().issues.filter(i => i.pub === pub && i.fmt === fmt);
+  const a = agg(rows), b = agg(rows.map(r => bud.get(r.m)).filter(Boolean)), d = dev(lv(a), lv(b));
+  const sc = { 'eingegangen': 'g', 'in Prüfung': 'y', 'ausstehend': 'r' }[t.status] || 'n';
+  const cell = (v, txt, bad) => `<td class="n ${bad || !isNum(v) ? 'cell-neg' : ''}">${isNum(v) ? txt : '—'}</td>`;
+  $('#modal').innerHTML = `<div class="modal-head"><div><h3>Template ${esc(p.name)} – ${esc(f.name)}</h3><div class="sub">${esc(f.long || f.name)} · ${esc(V.label)}${p.owner ? ' · ' + esc(p.owner) : ''} · ${esc(monthRangeLabel())}</div></div><button class="btn" id="mClose">✕</button></div>
+    <div class="grid kpis">
+      ${kpiTile({ label: 'Template-Status', value: `<span class="ampel"><span class="dot ${sc}"></span>${esc(t.status)}</span>`, unit: '', cmp: `${t.fallback ? 'Fallback ' + esc(VER[t.fallback].label) + ' · ' : ''}${t.updated ? 'aktualisiert ' + esc(t.updated) : 'noch nicht eingegangen'}` })}
+      ${kpiTile({ label: `${fcLabel()} (${levelLabel()})`, value: mio(lv(a)), unit: 'Mio. €', cmp: `Budget ${fmtEur(lv(b))}` })}
+      ${kpiTile({ label: 'Abweichung zum Budget', value: fmtPct(d.rel, 1, true).replace(' %', ''), unit: '%', cls: cls(d.rel), cmp: fmtEur(d.abs, true) })}
+      ${kpiTile({ label: 'Hinweise', value: String(issues.length), unit: '', cls: issues.some(i => i.sev === 'r') ? 'neg' : issues.length ? 'warn' : 'pos', cmp: issues.length ? 'siehe unten' : 'keine Auffälligkeiten' })}
+    </div>
+    <div class="card mt"><h3>Monatswerte laut Template</h3><div class="sub">${ai ? 'Treiberkette: Reichweite × AI-Faktor = Possible AIs × Auslastung = Sold AIs / 1.000 × TKP = Netto 2' : 'Pauschalerlös je Monat'} · rot = fehlender oder unplausibler Wert</div>
+      <div class="tbl-wrap mt" style="max-height:none"><table class="tbl"><thead><tr><th>Monat</th><th>Basis</th>${ai ? `<th class="n">${f.reachLabel || 'Reichweite'}</th><th class="n">${f.ratioLabel || 'AI-Faktor'}</th><th class="n">Possible AIs</th><th class="n">Auslastung</th><th class="n">TKP</th>` : '<th class="n">Pauschalerlös</th>'}<th class="n">Netto 2</th><th class="n">Budget N2</th><th class="n">Abw. %</th></tr></thead><tbody>
+      ${rows.map(r => { const bb = bud.get(r.m), dd = dev(r.c.n2, bb ? bb.c.n2 : null);
+        const basis = r.isIst ? '<span class="chip info">Ist</span>' : r.flags.includes('fallback') ? '<span class="chip warn">Fallback</span>' : r.imp ? '<span class="chip grey">Import</span>' : '<span class="chip grey">Template</span>';
+        return `<tr><td>${MONTHS_LONG[r.m]}</td><td>${basis}</td>${ai ? cell(r.reach, fmtCount(r.reach)) + cell(r.ratio, fmtNum(r.ratio, 2)) + cell(r.c.poss, fmtCount(r.c.poss), r.c.missing) + cell(r.util, fmtPct(r.util, 1), isNum(r.util) && r.util > 1) + cell(r.tkp, fmtNum(r.tkp, 2) + ' €') : cell(r.flat, fmtEur(r.flat))}<td class="n">${fmtEur(r.c.n2)}</td><td class="n">${bb ? fmtEur(bb.c.n2) : '—'}</td><td class="n ${cls(dd.rel)}">${fmtPct(dd.rel, 1, true)}</td></tr>`; }).join('') || `<tr><td colspan="10" class="empty">Keine Daten für die aktuelle Auswahl</td></tr>`}
+      </tbody><tfoot><tr><td colspan="${ai ? 7 : 3}">Summe ${esc(monthRangeLabel())}</td><td class="n">${fmtEur(a.n2)}</td><td class="n">${fmtEur(b.n2)}</td><td class="n ${cls(dev(a.n2, b.n2).rel)}">${fmtPct(dev(a.n2, b.n2).rel, 1, true)}</td></tr></tfoot></table></div></div>
+    ${issues.length ? `<div class="card mt"><h3>Hinweise zu diesem Template</h3><div class="sub">Klick zeigt Befund, Regel und Empfehlung</div><div class="list mt">${issueList(issues)}</div></div>` : ''}
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap"><button class="btn" id="mFc">In Forecast-Tabelle anzeigen</button><button class="btn" id="mPub">Publisher-Details</button><button class="btn primary" id="mClose2">Schließen</button></div>`;
+  $('#modalBg').classList.add('on');
+  $('#mClose').onclick = closeModal; $('#mClose2').onclick = closeModal; $('#mPub').onclick = () => openPublisher(pub);
+  $$('#modal [data-issue]').forEach(x => x.onclick = () => openIssue(issues.find(i => i.id === x.dataset.issue)));
+  $('#mFc').onclick = () => { closeModal(); S.page = 'forecast'; S.fcGran = 'pfm'; S.fcFormat = fmt; renderAll(); const d2 = $('#fcTable') && $('#fcTable').closest('details'); if (d2) { d2.open = true; setTimeout(() => d2.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50); } };
+}
 function renderAll() {
   try { renderHeader(); } catch (e) { console.error(e); }
+  try { renderTplNav(); } catch (e) { console.error(e); }
   syncNav();
   try { PAGES[S.page](); } catch (e) { console.error(e); $('#page-' + S.page).innerHTML = `<div class="card empty">Fehler bei der Darstellung: ${esc(e.message)}</div>`; }
   updateChatCtx(); renderSuggestions();
 }
 function initNav() {
+  $$('#nav [data-step]').forEach(b => b.onclick = () => { const [pg, tab] = b.dataset.step.split(':'); S.page = pg; if (tab) S.sapTab = tab; renderAll(); $('#main').scrollTop = 0; $$('#nav [data-step]').forEach(x => x.classList.toggle('on', x === b)); });
   $$('#nav button[data-page]').forEach(b => b.onclick = () => { S.page = b.dataset.page; renderAll(); $('#main').scrollTop = 0; });
 }
 let _rz; window.addEventListener('resize', () => { clearTimeout(_rz); _rz = setTimeout(() => { if (S.page === 'scenario') renderScenarioResults(); else PAGES[S.page](); }, 180); });
