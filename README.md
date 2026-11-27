@@ -16,7 +16,15 @@ Klickbarer Prototyp eines KI-gestützten Umsatz-Forecast-Dashboards für ein Con
 
 ## Design
 
-Dashboard und Dokumentation folgen dem RTL-Corporate-Design: Pink (`#E6007E`) als Akzentfarbe, neutrales Anthrazit für Navigation und Text, Schrift Inter (Ersatz für die nicht frei verfügbare Hausschrift). Die Farben sind zentral als CSS-Variablen (`--pink`, `--navy`, `--blue` …) und in den Chart-Paletten (`C`, `PUB_COLORS`, `GES_COLORS`, `IMPORT_PALETTE`) hinterlegt. Rot/Grün bleiben für Ampel und Abweichungen erhalten.
+Das Dashboard folgt der Ad-Alliance-CI aus der Präsentationsvorlage (Theme „RTL United White“):
+
+- **Basis Schwarz/Weiß:** schwarze Navigation, schwarze Primär-Buttons und aktive Zustände, weiße Flächen.
+- **Logo:** Ad-Alliance-Logo im Kopf, „Part of RTL“ im Navigationsfuß, Logo-Verlauf (`#E30164 → #784898 → #00B6ED`) als Linie über dem Kopf.
+- **Akzentfarben aus dem Theme:** Violett `#6E0CED` (Akzent 1, Hauptserie in Charts), Blau `#0C39ED` (Links), Petrol `#009699`, Orange `#FF5C01`, Gelb `#EDC00C`, Rot `#D4000D`.
+- **Schrift:** „RTL United Text“, sofern lokal installiert; sonst Inter als frei verfügbarer Ersatz. Die Hausschrift wird nicht mitgeliefert.
+- **Form:** kantige Ecken (4 px), keine Schatten, fette Überschriften.
+
+Die Farben liegen zentral als CSS-Variablen (`--pink` = Primäraktion, `--blue` = Akzent, `--link`, `--brand-grad` …) und in den Chart-Paletten (`C`, `PUB_COLORS`, `GES_COLORS`, `IMPORT_PALETTE`). Grün/Orange/Rot bleiben für Ampel und Abweichungen erhalten.
 
 ## Funktionen
 
