@@ -77,6 +77,38 @@ select.sel:focus,.ms-btn:focus{outline:2px solid var(--blue-2);outline-offset:1p
 .nav-foot{margin-top:auto;font-size:11px;color:#8c8c8c;padding:10px;line-height:1.5}
 .process{padding:4px 10px 0;font-size:11.5px;color:#a6a6a6;line-height:1.55}
 .process ol{margin:4px 0 0;padding-left:16px}
+/* Templates je Publisher in der Navigation */
+.tpl-title{display:flex;align-items:center;justify-content:space-between}
+.tpl-title span{font-weight:600;color:#a6a6a6;letter-spacing:0}
+.tpl-nav{display:flex;flex-direction:column;gap:1px}
+.tpl-pub{display:flex;align-items:center;border-radius:7px}
+.tpl-pub:hover{background:var(--navy-2)}
+.nav .tpl-chev,.nav .tpl-pubsel,.nav .tpl-item{display:flex;align-items:center;gap:8px;border:0;background:transparent;color:#d9d9d9;cursor:pointer;text-align:left;border-radius:7px}
+.nav .tpl-chev{width:24px;flex:none;padding:6px 0 6px 8px}
+.nav .tpl-pubsel{flex:1;min-width:0;padding:6px 10px 6px 2px;font-size:12.5px;font-weight:500}
+.nav .tpl-chev:hover,.nav .tpl-pubsel:hover{background:transparent;color:#fff}
+.tpl-pub .chev{width:10px;font-size:10px;color:#8c8c8c;transition:transform .15s}
+.tpl-pub.open .chev{transform:rotate(90deg)}
+.tpl-pub .cnt{margin-left:auto;font-size:10.5px;color:#8c8c8c;font-variant-numeric:tabular-nums;white-space:nowrap}
+.nav .tpl-pub.on .tpl-pubsel{color:#fff;font-weight:600}
+.cb{width:14px;height:14px;flex:none;border:1.5px solid #6b6b6b;border-radius:4px;display:inline-grid;place-items:center;font-size:10px;font-weight:700;line-height:1;color:#fff}
+.cb.all,.cb.part{background:var(--pink);border-color:var(--pink)}
+.tpl-selbar{white-space:nowrap;display:flex;align-items:center;justify-content:space-between;gap:6px;margin:0 4px 6px;padding:6px 8px;border-radius:7px;background:rgba(230,0,126,.16);color:#fff;font-size:11.5px;font-weight:600}
+.nav .tpl-selbar button{display:inline;width:auto;padding:2px 6px;font-size:11px;color:#ffb3d9;border-radius:5px}
+.nav .tpl-selbar button:hover{background:rgba(255,255,255,.08);color:#fff}
+.tpl-hint{font-size:11px;color:#8c8c8c;padding:0 10px 6px}
+.pill-sel{cursor:pointer;background:var(--pink-soft);border-color:var(--pink-3);color:var(--pink-2);font-family:inherit}
+.pill-sel:hover{background:#fbd3e8}
+.tpl-items{display:none;flex-direction:column;gap:1px;margin:1px 0 5px 22px;border-left:1px solid #333;padding-left:6px}
+.tpl-pub.open+.tpl-items{display:flex}
+.nav .tpl-item{padding:5px 8px;font-size:12px;color:#bfbfbf}
+.nav .tpl-item{width:100%}
+.nav .tpl-item:hover{background:var(--navy-2);color:#fff}
+.nav .tpl-item.on{color:#fff;font-weight:600}
+.tpl-item .dot,.tpl-pub .dot{width:7px;height:7px}
+.nav .process button{display:inline;width:auto;padding:2px 6px;margin-left:-6px;border-radius:5px;font-size:11.5px;color:#a6a6a6}
+.nav .process button:hover{background:var(--navy-2);color:#fff}
+.nav .process button.on{color:#fff;font-weight:600}
 /* Main */
 .main{overflow:auto;padding:16px 18px 40px;min-width:0}
 .page{display:none}
@@ -242,7 +274,7 @@ body.chat-open .chat{display:flex;animation:chatIn .18s ease-out}
   .topbar>*,.disclaimer>*{min-width:0;max-width:100%}
   .nav{flex-direction:row;overflow-x:auto;padding:8px;gap:4px}
   .nav button{width:auto;white-space:nowrap}
-  .nav-title,.nav-sep,.nav-foot,.process{display:none}
+  .nav-title,.nav-sep,.nav-foot,.process,.tpl-nav{display:none}
   .g2{grid-template-columns:1fr}
   .kmap{grid-template-columns:1fr 1fr}
   .tmatrix{grid-template-columns:90px repeat(4,minmax(0,1fr))}
@@ -375,15 +407,18 @@ body.chat-open .chat-fab{background:var(--navy);box-shadow:0 8px 24px rgba(0,0,0
     <button data-page="sap"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 15V4M7 9l5-5 5 5"/><path d="M4 15v4a1 1 0 001 1h14a1 1 0 001-1v-4"/></svg>Excel-Import &amp; SAP</button>
     <div class="nav-sep"></div>
     <button data-page="method"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg>Methodik &amp; Annahmen</button>
+    <div class="nav-sep"></div>
+    <div class="nav-title tpl-title">Templates <span id="tplNavCount"></span></div>
+    <div class="tpl-nav" id="tplNav" aria-label="Templates je Publisher und Werbeform"></div>
     <div class="process">
       <div class="nav-title" style="padding-left:0">Prozess</div>
       <ol>
-        <li>Templates (Brandmanager)</li>
-        <li>Konsolidierung</li>
-        <li>Netto 2 → Netto 4</li>
-        <li>SAP-Upload-Datei</li>
-        <li>GuV-Umsatzerlöse</li>
-        <li>Soll-/Forecast-Vergleich</li>
+        <li><button type="button" data-step="quality">Templates (Brandmanager)</button></li>
+        <li><button type="button" data-step="sap:upload">Konsolidierung</button></li>
+        <li><button type="button" data-step="sap:guv">Netto 2 → Netto 4</button></li>
+        <li><button type="button" data-step="sap:upload">SAP-Upload-Datei</button></li>
+        <li><button type="button" data-step="sap:guv">GuV-Umsatzerlöse</button></li>
+        <li><button type="button" data-step="forecast">Soll-/Forecast-Vergleich</button></li>
       </ol>
     </div>
     <div class="nav-foot">Klickbarer Prototyp für ein Controlling-Projekt.<br>Keine produktive Systemanbindung.</div>
@@ -665,6 +700,7 @@ const S = {
   version: 'FC4',
   months: new Set([...Array(12).keys()]),
   pubs: new Set(DATA.publishers.map(p => p.id)),
+  tplFilter: new Set(), // Auswahl einzelner Templates (Publisher-Werbeform); leer = alle
   ges: new Set([...DATA.gesellschaften.map(g => g.id), NA_GES]),
   level: 'N2',
   page: 'overview',
@@ -677,8 +713,9 @@ const S = {
 /* ---------- Filterfunktionen ---------- */
 function rowsFor(versionId, opt = {}) {
   const months = opt.months || S.months, pubs = opt.pubs || S.pubs, ges = opt.ges || S.ges;
+  const tpl = opt.tpl || S.tplFilter;
   return ROWS.filter(r => r.v === versionId && months.has(r.m) && pubs.has(r.pub) && ges.has(r.ges || NA_GES)
-    && (!opt.fmt || r.fmt === opt.fmt));
+    && (!opt.fmt || r.fmt === opt.fmt) && (!tpl || !tpl.size || tpl.has(r.pub + '-' + r.fmt)));
 }
 // Vergleichsversionen: bei Excel-Import (und daraus abgeleiteten Varianten) Budget/Vorjahr aus der Datei
 const isImportVersion = (v = S.version) => VER[v] && (VER[v].kind === 'import' || (VER[v].base && VER[VER[v].base] && VER[VER[v].base].kind === 'import'));
@@ -795,6 +832,7 @@ function kiSuggestionRows(versionId = S.version, opt = {}) {
   if (!V || V.kind !== 'fc' || !V.istMonths || V.istMonths >= 12 || isImportVersion(versionId)) return [];
   const cut = V.istMonths, months = opt.months || S.months, pubs = opt.pubs || S.pubs, ges = opt.ges || S.ges, out = [];
   DATA.publishers.filter(p => pubs.has(p.id)).forEach(p => DATA.formats.forEach(f => {
+    if (S.tplFilter.size && !S.tplFilter.has(p.id + '-' + f.id)) return;
     const tr = ytdTrend(versionId, p.id, f.id, cut);
     for (let m = cut; m < 12; m++) {
       if (!months.has(m)) continue;
@@ -847,12 +885,13 @@ function templateList(versionId = S.version) {
   if (isImportVersion(versionId)) {
     // Import: „Template“ = in der Datei enthaltene Kombination Publisher × Werbeform
     const keys = new Set(ROWS.filter(r => r.v === 'IMP').map(r => r.pub + '-' + r.fmt));
-    return [...keys].filter(k => S.pubs.has(k.split('-')[0])).map(k => { const [p, f] = k.split('-');
+    return [...keys].filter(k => S.pubs.has(k.split('-')[0]) && (!S.tplFilter.size || S.tplFilter.has(k))).map(k => { const [p, f] = k.split('-');
       return { key: k, p: PUB[p], f: FMT[f], status: 'eingegangen', updated: VER.IMP.stand }; });
   }
   const map = DATA.templates[baseId] || {}, out = [];
   DATA.publishers.filter(p => S.pubs.has(p.id) && !p.imported).forEach(p => DATA.formats.filter(f => !f.imported).forEach(f => {
     const key = p.id + '-' + f.id, t = map[key] || { status: 'eingegangen' };
+    if (S.tplFilter.size && !S.tplFilter.has(key)) return;
     out.push({ key, p, f, status: t.status, fallback: t.fallback,
       updated: t.status === 'ausstehend' ? null : (baseId === 'FC4' ? DATA.templateUpdated[p.id] : VER[baseId] ? VER[baseId].stand : '—') });
   }));
@@ -960,7 +999,8 @@ function monthRangeLabel(set = S.months) {
 function pubLabel(set = S.pubs) { return set.size === DATA.publishers.length ? 'alle Publisher' : [...set].map(id => PUB[id].name).join(', '); }
 function gesLabel(set = S.ges) { const real = [...set].filter(g => g !== NA_GES); return real.length === DATA.gesellschaften.length ? 'alle Gesellschaften' : real.map(id => GES[id].name).join(', ') || 'keine Gesellschaft'; }
 function levelLabel(l = S.level) { return l === 'N4' ? 'Netto 4' : 'Netto 2'; }
-function contextLabel() { return `${VER[S.version].label} · ${monthRangeLabel()} · ${pubLabel()} · ${gesLabel()} · ${levelLabel()}`; }
+function tplLabel(set = S.tplFilter) { if (!set.size) return ''; const l = [...set].map(k => { const [p, f] = k.split('-'); return `${PUB[p] ? PUB[p].name : p} ${FMT[f] ? FMT[f].name : f}`; }); return 'Templates: ' + (l.length > 3 ? l.slice(0, 3).join(', ') + ` +${l.length - 3}` : l.join(', ')); }
+function contextLabel() { return `${VER[S.version].label} · ${monthRangeLabel()} · ${pubLabel()} · ${gesLabel()}${S.tplFilter.size ? ' · ' + tplLabel() : ''} · ${levelLabel()}`; }
 function versionSourceLabel(v = S.version) {
   const V = VER[v]; if (V.kind === 'budget') return 'Budgetplanung 2026';
   if (V.kind === 'import') return `Excel-Import „${V.file}“, Blatt „${V.sheet}“ (${V.records} Datensätze übernommen)`;
@@ -1517,7 +1557,7 @@ function initHeader() {
   $('#btnReset').onclick = resetFilters;
 }
 function resetFilters() {
-  S.months = new Set([...Array(12).keys()]); S.level = 'N2';
+  S.months = new Set([...Array(12).keys()]); S.level = 'N2'; S.tplFilter = new Set();
   if (!isImportVersion()) S.version = 'FC4';
   rebuildFilters(); MS.month.render(); renderAll(); toast('Alle Filter zurückgesetzt');
 }
@@ -1535,7 +1575,9 @@ function renderHeader() {
   $('#statusPills').innerHTML = `${isImportVersion() ? `<span class="pill"><span class="dot b"></span>Import: ${VER.IMP ? VER.IMP.records : 0} Datensätze</span>` : `<span class="pill"${tipAttr(`<b>Template-Eingang</b><br>${q.received} von ${q.total} eingegangen${q.pending ? '<br>Ausstehend: ' + q.tpl.filter(t => t.status === 'ausstehend').map(t => esc(t.p.name + ' ' + t.f.name)).join(', ') : ''}`)}><span class="dot ${q.pending ? 'y' : 'g'}"></span>Templates ${q.received}/${q.total}</span>`}
     <span class="pill"${tipAttr(`<b>Kritische Prüfpunkte</b><br>${q.issues.filter(i => i.sev === 'r').slice(0, 6).map(i => '• ' + esc(i.title)).join('<br>') || 'keine'}`)}><span class="dot ${crit ? 'r' : 'g'}"></span>${crit} kritische Prüfpunkte</span>
     <span class="pill"><span class="dot ${S.version === 'BUD' ? 'n' : a}"></span>${S.version === 'BUD' ? 'Budget = Referenz' : 'ggü. Budget ' + fmtPct(k.dBud.rel, 1, true)}</span>
+    ${S.tplFilter.size ? `<button type="button" class="pill pill-sel" id="pillTplSel"${tipAttr(`<b>Template-Auswahl aktiv</b><br>${esc(tplLabel())}<br><i>Klick: Auswahl aufheben</i>`)}>☑ ${S.tplFilter.size} Template${S.tplFilter.size > 1 ? 's' : ''} ausgewählt <b>✕</b></button>` : ''}
     <span class="pill" title="Freigabe durch Brand, Controlling und Geschäftsführung"><span class="dot ${approvalDone() ? 'g' : approvalCount() ? 'y' : 'n'}"></span>Freigabe ${approvalCount()}/${APPROVAL_STEPS.length}</span>`;
+  if ($('#pillTplSel')) $('#pillTplSel').onclick = () => setTplFilter(new Set());
   $('#dqBadge').textContent = crit || ''; $('#dqBadge').style.display = crit ? '' : 'none';
 }
 function pageHead(title, desc) {
@@ -3084,13 +3126,53 @@ function initChat() {
    ===================================================================== */
 const PAGES = { overview: renderOverview, forecast: renderForecast, scenario: renderScenario, quality: renderQuality, sap: renderSap, method: renderMethod };
 function syncNav() { $$('#nav button[data-page]').forEach(b => b.classList.toggle('on', b.dataset.page === S.page)); $$('.page').forEach(p => p.classList.toggle('on', p.id === 'page-' + S.page)); }
+/* ---------- Navigation: Templates je Publisher × Werbeform als Mehrfachauswahl (filtert das Dashboard) ---------- */
+S.navOpen = new Set();
+function navQuality() { const sp = S.pubs, st = S.tplFilter; S.pubs = new Set(pubsInVersion()); S.tplFilter = new Set(); try { return runQualityChecks(); } finally { S.pubs = sp; S.tplFilter = st; } }
+function setTplFilter(set) {
+  S.tplFilter = set;
+  // Publisher-Filter folgt der Auswahl, damit Kopfzeile und Tabellen dazu passen
+  S.pubs = set.size ? new Set([...set].map(k => k.split('-')[0])) : new Set(pubsInVersion());
+  if (MS.pub) MS.pub.render();
+  renderAll();
+  toast(set.size ? `Auswahl: ${set.size} Template${set.size > 1 ? 's' : ''}` : 'Template-Auswahl aufgehoben – alle Templates');
+}
+function renderTplNav() {
+  const el = $('#tplNav'); if (!el) return;
+  const q = navQuality(), tpl = q.tpl, sel = S.tplFilter;
+  const sevOf = t => { const iss = q.issues.filter(i => i.pub === t.p.id && i.fmt === t.f.id && i.type !== 'template' && i.type !== 'review');
+    return t.status === 'ausstehend' || iss.some(i => i.sev === 'r') ? 'r' : t.status === 'in Prüfung' || iss.length ? 'y' : 'g'; };
+  const pubs = [...new Map(tpl.map(t => [t.p.id, t.p])).values()];
+  const box = st => `<span class="cb ${st}" aria-hidden="true">${st === 'all' ? '✓' : st === 'part' ? '–' : ''}</span>`;
+  el.innerHTML = (sel.size ? `<div class="tpl-selbar"><span>${sel.size} ausgewählt</span><button type="button" id="tplClear" aria-label="Auswahl aufheben">✕ aufheben</button></div>` : '<div class="tpl-hint">Klicken, um Templates auszuwählen</div>') + pubs.map(p => {
+    const ts = tpl.filter(t => t.p.id === p.id), rec = ts.filter(t => t.status !== 'ausstehend').length, sv = ts.map(sevOf);
+    const ps = sv.includes('r') ? 'r' : sv.includes('y') ? 'y' : 'g', open = S.navOpen.has(p.id);
+    const nSel = ts.filter(t => sel.has(t.key)).length, pst = nSel === 0 ? 'none' : nSel === ts.length ? 'all' : 'part';
+    return `<div class="tpl-pub ${open ? 'open' : ''} ${nSel ? 'on' : ''}">
+        <button type="button" class="tpl-chev" data-open="${p.id}" aria-expanded="${open}" aria-label="${esc(p.name)} auf-/zuklappen"><span class="chev">▶</span></button>
+        <button type="button" class="tpl-pubsel" data-selpub="${p.id}" aria-pressed="${pst === 'all'}"${tipAttr(`<b>${esc(p.name)}</b>${p.segment ? ' · ' + esc(p.segment) : ''}<br>${rec} von ${ts.length} Templates eingegangen<br><i>Klick: alle Werbeformen von ${esc(p.name)} ${pst === 'all' ? 'abwählen' : 'auswählen'}</i>`)}>${box(pst)}<span class="dot ${ps}"></span>${esc(p.name)}<span class="cnt">${nSel ? nSel + ' von ' : ''}${ts.length}</span></button>
+      </div>
+      <div class="tpl-items">${ts.map((t, k) => { const on = sel.has(t.key);
+        return `<button type="button" class="tpl-item ${on ? 'on' : ''}" data-key="${t.key}" aria-pressed="${on}"${tipAttr(`<b>${esc(p.name)} – ${esc(t.f.name)}</b><br>Status: ${esc(t.status)}${t.fallback ? ' (Fallback ' + esc(VER[t.fallback].label) + ')' : ''}${t.updated ? '<br>Aktualisiert: ' + esc(t.updated) : ''}<br><i>Klick: ${on ? 'aus Auswahl entfernen' : 'zur Auswahl hinzufügen'}</i>`)}>${box(on ? 'all' : 'none')}<span class="dot ${sv[k]}"></span>${esc(t.f.name)}</button>`; }).join('')}</div>`;
+  }).join('');
+  $('#tplNavCount').textContent = `${q.received}/${q.total}`;
+  $$('#tplNav [data-open]').forEach(b => b.onclick = () => { const id = b.dataset.open; S.navOpen.has(id) ? S.navOpen.delete(id) : S.navOpen.add(id); renderTplNav(); });
+  $$('#tplNav [data-selpub]').forEach(b => b.onclick = () => {
+    const id = b.dataset.selpub, keys = tpl.filter(t => t.p.id === id).map(t => t.key), s2 = new Set(sel);
+    const all = keys.every(k => s2.has(k)); keys.forEach(k => all ? s2.delete(k) : s2.add(k)); S.navOpen.add(id); setTplFilter(s2);
+  });
+  $$('#tplNav [data-key]').forEach(b => b.onclick = () => { const s2 = new Set(sel); s2.has(b.dataset.key) ? s2.delete(b.dataset.key) : s2.add(b.dataset.key); setTplFilter(s2); });
+  if ($('#tplClear')) $('#tplClear').onclick = () => setTplFilter(new Set());
+}
 function renderAll() {
   try { renderHeader(); } catch (e) { console.error(e); }
+  try { renderTplNav(); } catch (e) { console.error(e); }
   syncNav();
   try { PAGES[S.page](); } catch (e) { console.error(e); $('#page-' + S.page).innerHTML = `<div class="card empty">Fehler bei der Darstellung: ${esc(e.message)}</div>`; }
   updateChatCtx(); renderSuggestions();
 }
 function initNav() {
+  $$('#nav [data-step]').forEach(b => b.onclick = () => { const [pg, tab] = b.dataset.step.split(':'); S.page = pg; if (tab) S.sapTab = tab; renderAll(); $('#main').scrollTop = 0; $$('#nav [data-step]').forEach(x => x.classList.toggle('on', x === b)); });
   $$('#nav button[data-page]').forEach(b => b.onclick = () => { S.page = b.dataset.page; renderAll(); $('#main').scrollTop = 0; });
 }
 let _rz; window.addEventListener('resize', () => { clearTimeout(_rz); _rz = setTimeout(() => { if (S.page === 'scenario') renderScenarioResults(); else PAGES[S.page](); }, 180); });
