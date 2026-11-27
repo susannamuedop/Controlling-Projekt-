@@ -22,7 +22,7 @@ html,body{margin:0;height:100%}
 body{font-family:var(--font);font-size:13px;color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased}
 button,input,select{font-family:inherit;font-size:inherit;color:inherit}
 .num,td.n,.kpi-value{font-variant-numeric:tabular-nums}
-.app{display:grid;grid-template-columns:212px minmax(0,1fr) 372px;grid-template-rows:auto auto 1fr;height:100vh}
+.app{display:grid;grid-template-columns:212px minmax(0,1fr);grid-template-rows:auto auto 1fr;height:100vh}
 /* Header */
 .topbar{grid-column:1/-1;display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:var(--surface);border-bottom:1px solid var(--line);padding:10px 18px}
 .brand{display:flex;align-items:center;gap:10px;min-width:200px}
@@ -176,7 +176,11 @@ table.tbl{width:100%;border-collapse:collapse;font-size:12px}
 .tcell{border-radius:7px;padding:6px 8px;font-size:11.5px;font-weight:500;display:flex;align-items:center;gap:6px;border:1px solid var(--line)}
 .tcell.g{background:var(--green-soft);border-color:#c5e8d6}.tcell.y{background:var(--orange-soft);border-color:#f3d9ad}.tcell.r{background:var(--red-soft);border-color:#f2c4c4}
 /* chat */
-.chat{border-left:1px solid var(--line);background:var(--surface);display:flex;flex-direction:column;min-height:0;overflow:hidden}
+/* Chat als schwebendes Fenster, geöffnet über den Button unten rechts */
+.chat{position:fixed;z-index:90;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(84px + env(safe-area-inset-bottom,0px));width:min(420px,calc(100vw - 32px));height:min(680px,calc(100vh - 110px));
+  background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 18px 50px rgba(0,0,0,.22);display:none;flex-direction:column;min-height:0;overflow:hidden}
+body.chat-open .chat{display:flex;animation:chatIn .18s ease-out}
+@keyframes chatIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 .chat-head{padding:12px 14px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:9px}
 .chat-head .row{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .chat-head h2{font-size:14px;margin:0;display:flex;align-items:center;gap:8px}
@@ -224,10 +228,9 @@ table.tbl{width:100%;border-collapse:collapse;font-size:12px}
 .kmap b{display:block;font-size:12px;margin-bottom:2px}
 .empty{padding:20px;text-align:center;color:var(--text-3)}
 /* responsive */
-@media (max-width:1400px){.app{grid-template-columns:196px minmax(0,1fr) 340px}.kpis{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media (max-width:1400px){.app{grid-template-columns:196px minmax(0,1fr)}}
 @media (max-width:1180px){
-  .app{grid-template-columns:180px minmax(0,1fr);grid-template-rows:auto auto 1fr auto;height:auto;min-height:100vh}
-  .chat{grid-column:1/-1;border-left:0;border-top:1px solid var(--line);height:640px}
+  .app{grid-template-columns:180px minmax(0,1fr);grid-template-rows:auto auto 1fr;height:auto;min-height:100vh}
   .main{overflow:visible}
   .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
   .g21,.g12,.g3{grid-template-columns:1fr}
@@ -235,7 +238,8 @@ table.tbl{width:100%;border-collapse:collapse;font-size:12px}
   .stepper{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media (max-width:760px){
-  .app{grid-template-columns:1fr}
+  .app{grid-template-columns:minmax(0,1fr)}
+  .topbar>*,.disclaimer>*{min-width:0;max-width:100%}
   .nav{flex-direction:row;overflow-x:auto;padding:8px;gap:4px}
   .nav button{width:auto;white-space:nowrap}
   .nav-title,.nav-sep,.nav-foot,.process{display:none}
@@ -290,10 +294,52 @@ details.card>summary{color:var(--text);font-size:13.5px}
 .msg-actions button{border:1px solid var(--pink);background:#fff;color:var(--pink);border-radius:6px;padding:4px 9px;font-size:11.5px;cursor:pointer;font-weight:600}
 .msg-actions button:hover{background:var(--pink);color:#fff}
 .msg-actions button:disabled{opacity:.45;cursor:default;background:#fff;color:var(--pink)}
-.chat-fab{display:none;position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:70;border:0;background:var(--pink);color:#fff;border-radius:999px;padding:11px 16px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.3);cursor:pointer}
+.chat-fab{display:inline-flex;align-items:center;gap:8px;position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:95;border:0;background:var(--pink);color:#fff;border-radius:999px;padding:0 18px 0 14px;height:52px;font-weight:600;font-size:13.5px;box-shadow:0 8px 24px rgba(230,0,126,.35);cursor:pointer;transition:transform .15s,background .15s}
+.chat-fab:hover{background:var(--pink-2);transform:translateY(-1px)}
+.chat-fab .fab-ic{font-size:20px;line-height:1}
+body.chat-open .chat-fab{background:var(--navy);box-shadow:0 8px 24px rgba(0,0,0,.3)}
 @media (max-width:1400px){.kpis.k6{grid-template-columns:repeat(3,minmax(0,1fr))}.flow{grid-template-columns:repeat(4,minmax(0,1fr))}}
-.chat-close{display:none}
-@media (max-width:1180px){.chat-fab{display:block}.chat-close{display:inline-flex}body.chat-closed .chat{display:none}}
+.chat-close{display:inline-flex}
+/* Hinweise: per Klick/Tippen oder Mouseover sichtbar */
+.hint-btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line-2);background:#fff;border-radius:999px;padding:2px 9px;font-size:11.5px;font-weight:600;cursor:pointer;color:var(--text);white-space:nowrap}
+.hint-btn:hover,.hint-btn:focus-visible{border-color:var(--pink);color:var(--pink);outline:none}
+.hint-btn .i{font-style:normal;color:var(--pink)}
+.pill[data-tip]{cursor:help}
+[data-tip]{-webkit-tap-highlight-color:transparent}
+.tip{max-width:min(320px,calc(100vw - 16px))}
+/* ===== Endgeräte ===== */
+/* Große Bildschirme (ab 1700 px): mehr Platz, größere Schrift */
+@media (min-width:1700px){
+  body{font-size:14px}
+  .app{grid-template-columns:236px minmax(0,1fr)}
+  .main{padding:22px 28px 48px}
+  .kpi .kpi-value{font-size:26px}
+  .grid{gap:16px}.mt{margin-top:16px}
+  .tbl-wrap{max-height:680px}
+}
+/* Handy (bis 760 px): Chat als Vollbild, Filter untereinander, Button nur mit Symbol */
+@media (max-width:760px){
+  .chat{inset:0;width:auto;height:auto;border-radius:0;border:0;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+  body.chat-open .chat-fab{display:none}
+  body.chat-open{overflow:hidden}
+  .chat-fab{padding:0;width:56px;height:56px;justify-content:center}
+  .chat-fab .fab-l{display:none}
+  .filters{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
+  .filters .ctl:last-child{grid-column:1/-1}
+  select.sel,.ms-btn,#fVersion{width:100%;max-width:none;min-width:0}
+  .filters .seg{width:100%}.filters .seg button{flex:1}
+  .filters .btn{width:100%;justify-content:center}
+  .status-pills{flex-wrap:nowrap;overflow-x:auto;width:100%;padding-bottom:2px}
+  .page-head{flex-direction:column;align-items:flex-start}
+  .card{padding:12px}
+  .kpi .kpi-value{font-size:19px;white-space:normal}
+  .modal-bg{padding:0}
+  .modal{max-height:100vh;height:100%;border-radius:0;padding:14px 14px calc(14px + env(safe-area-inset-bottom,0px))}
+  .ms-pop{position:fixed;left:12px;right:12px;top:auto;min-width:0}
+  .tbl td,.tbl th{padding:6px 7px}
+  .sc-ctrl .slider-box input[type=range]{height:28px}
+}
+@media (max-width:420px){.kpis,.kpis.k6{grid-template-columns:1fr 1fr}.kpi .kpi-value{font-size:17px}.brand h1{font-size:14px}}
 @media (max-width:760px){.kpis.k6{grid-template-columns:repeat(2,minmax(0,1fr))}.flow{grid-template-columns:repeat(2,minmax(0,1fr))}.tabs button{padding:8px 9px}}
 </style>
 <div class="app">
@@ -358,7 +404,7 @@ details.card>summary{color:var(--text);font-size:13.5px}
     <div class="chat-head">
       <div class="row">
         <h2>Controlling AI Assistant <span class="ai-badge">SIMULIERT</span></h2>
-        <span><button class="btn ghost" id="chatReset" title="Chat zurücksetzen">↺ Neu</button><button class="btn ghost chat-close" id="chatClose" title="Chat einklappen">✕</button></span>
+        <span><button class="btn ghost" id="chatReset" title="Chat zurücksetzen">↺ Neu</button><button class="btn ghost chat-close" id="chatClose" aria-label="Chat schließen">✕</button></span>
       </div>
       <div class="role-seg" id="roleSeg">
         <button data-role="brand" class="on">Brand / Fachabt.</button>
@@ -376,7 +422,7 @@ details.card>summary{color:var(--text);font-size:13.5px}
   </aside>
 </div>
 
-<button class="chat-fab" id="chatFab" type="button">💬 Controlling AI Assistant</button>
+<button class="chat-fab" id="chatFab" type="button" aria-label="Controlling AI Assistant öffnen" aria-expanded="false"><span class="fab-ic">💬</span><span class="fab-l">AI Assistant</span></button>
 <div class="modal-bg" id="modalBg"><div class="modal" id="modal"></div></div>
 <div class="tip" id="tip"></div>
 <div class="toast" id="toast"></div>
@@ -1396,18 +1442,31 @@ function waterfallChart(el, o) {
   el.innerHTML = `<div class="chart">${s}<line class="axis" x1="${m.l}" x2="${W - m.r}" y1="${yBase}" y2="${yBase}"/>${broken ? `<path d="M${m.l - 6} ${yBase - 3} l6 -4 M${m.l - 6} ${yBase + 3} l6 -4" stroke="#808080"/>` : ''}</svg></div><div class="legend"><span>Werte in Mio. €</span><span><i style="background:${C.navy}"></i>Summe</span><span><i style="background:${C.red}"></i>Abzug</span>${broken ? '<span class="muted">Achse beginnt nicht bei 0</span>' : ''}</div>`;
 }
 
-/* Tooltip */
+/* Tooltip / Hinweise: Maus = drüberfahren, Handy/Tablet = antippen (erneut tippen oder woanders tippen schließt) */
 (function () {
   const tip = document.getElementById('tip');
+  const canHover = () => window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  let pinned = null;
+  const place = (x, y) => { const w = tip.offsetWidth, h = tip.offsetHeight; let l = x + 14, t = y + 14;
+    if (l + w > innerWidth - 8) l = Math.max(8, x - w - 14); if (t + h > innerHeight - 8) t = Math.max(8, y - h - 14);
+    tip.style.left = l + 'px'; tip.style.top = t + 'px'; };
+  const show = (html, x, y) => { tip.innerHTML = html; tip.style.display = 'block'; place(x, y); };
+  const hide = () => { tip.style.display = 'none'; pinned = null; };
   document.addEventListener('mousemove', e => {
+    if (pinned || !canHover()) return;
     const t = e.target && e.target.closest ? e.target.closest('[data-tip]') : null;
     if (!t) { tip.style.display = 'none'; return; }
-    tip.innerHTML = t.getAttribute('data-tip'); tip.style.display = 'block';
-    const w = tip.offsetWidth, h = tip.offsetHeight;
-    let x = e.clientX + 14, y = e.clientY + 14;
-    if (x + w > innerWidth - 8) x = e.clientX - w - 14; if (y + h > innerHeight - 8) y = e.clientY - h - 14;
-    tip.style.left = x + 'px'; tip.style.top = y + 'px';
+    show(t.getAttribute('data-tip'), e.clientX, e.clientY);
   });
+  document.addEventListener('click', e => {
+    if (canHover()) { tip.style.display = 'none'; return; }
+    const t = e.target && e.target.closest ? e.target.closest('[data-tip],[title]:not(button):not(select):not(input):not(option)') : null;
+    if (!t || t.closest('.tip-hover-only')) { if (pinned) hide(); return; }
+    if (pinned === t) { hide(); return; }
+    const html = t.getAttribute('data-tip') || esc(t.getAttribute('title') || ''); if (!html) return;
+    const r = t.getBoundingClientRect(); show(html, Math.min(r.left + 20, innerWidth - 20), r.bottom - 4); pinned = t;
+  }, true);
+  window.addEventListener('scroll', () => { if (pinned) hide(); }, true);
 })();
 </script>
 <script>
@@ -1473,8 +1532,8 @@ function renderHeader() {
     : `<b>GJ 2026</b> · Ist Jan–${MONTHS[V.istMonths - 1]} · Forecast ${MONTHS[V.istMonths]}–Dez · Stand ${V.stand}${V.base ? ' · Variante' : ''}`;
   $$('#fLevel button').forEach(b => b.classList.toggle('on', b.dataset.v === S.level));
   const q = runQualityChecks(), k = kpis(), a = ampelOf(k.dBud.rel), crit = q.issues.filter(i => i.sev === 'r').length;
-  $('#statusPills').innerHTML = `${isImportVersion() ? `<span class="pill"><span class="dot b"></span>Import: ${VER.IMP ? VER.IMP.records : 0} Datensätze</span>` : `<span class="pill"><span class="dot ${q.pending ? 'y' : 'g'}"></span>Templates ${q.received}/${q.total}</span>`}
-    <span class="pill"><span class="dot ${crit ? 'r' : 'g'}"></span>${crit} kritische Prüfpunkte</span>
+  $('#statusPills').innerHTML = `${isImportVersion() ? `<span class="pill"><span class="dot b"></span>Import: ${VER.IMP ? VER.IMP.records : 0} Datensätze</span>` : `<span class="pill"${tipAttr(`<b>Template-Eingang</b><br>${q.received} von ${q.total} eingegangen${q.pending ? '<br>Ausstehend: ' + q.tpl.filter(t => t.status === 'ausstehend').map(t => esc(t.p.name + ' ' + t.f.name)).join(', ') : ''}`)}><span class="dot ${q.pending ? 'y' : 'g'}"></span>Templates ${q.received}/${q.total}</span>`}
+    <span class="pill"${tipAttr(`<b>Kritische Prüfpunkte</b><br>${q.issues.filter(i => i.sev === 'r').slice(0, 6).map(i => '• ' + esc(i.title)).join('<br>') || 'keine'}`)}><span class="dot ${crit ? 'r' : 'g'}"></span>${crit} kritische Prüfpunkte</span>
     <span class="pill"><span class="dot ${S.version === 'BUD' ? 'n' : a}"></span>${S.version === 'BUD' ? 'Budget = Referenz' : 'ggü. Budget ' + fmtPct(k.dBud.rel, 1, true)}</span>
     <span class="pill" title="Freigabe durch Brand, Controlling und Geschäftsführung"><span class="dot ${approvalDone() ? 'g' : approvalCount() ? 'y' : 'n'}"></span>Freigabe ${approvalCount()}/${APPROVAL_STEPS.length}</span>`;
   $('#dqBadge').textContent = crit || ''; $('#dqBadge').style.display = crit ? '' : 'none';
@@ -1535,9 +1594,10 @@ function renderOverview() {
   $('#ovAmpel').innerHTML = `<div class="tbl-wrap" style="max-height:none"><table class="tbl"><thead><tr><th>Publisher</th><th class="n">${fcName}</th><th class="n">Abw. Budget</th><th>Budget-Ampel</th><th class="n">ggü. VJ</th><th>Datenqualität</th></tr></thead><tbody>
     ${pt.map(x => { const s = qs.find(y => y.p.id === x.p.id) || { sev: 'g', issues: [] }, a = ampelOf(x.dBud.rel); return `<tr><td><button class="link" data-pub="${x.p.id}">${x.p.name}</button><div class="muted" style="font-size:11px">${x.p.ges && GES[x.p.ges] ? GES[x.p.ges].name : '—'}</div></td>
       <td class="n">${fmtEur(lv(x.fc))}</td><td class="n ${cls(x.dBud.rel)}">${fmtPct(x.dBud.rel, 1, true)}</td><td><span class="ampel"><span class="dot ${S.version === 'BUD' ? 'n' : a}"></span>${S.version === 'BUD' ? '–' : ampelText[a]}</span></td>
-      <td class="n ${cls(x.dVj.rel)}">${fmtPct(x.dVj.rel, 1, true)}</td><td><span class="ampel"><span class="dot ${s.sev}"></span>${s.issues.length ? s.issues.length + ' Hinweis(e)' : 'ok'}</span></td></tr>`; }).join('')}
+      <td class="n ${cls(x.dVj.rel)}">${fmtPct(x.dVj.rel, 1, true)}</td><td>${s.issues.length ? `<button type="button" class="hint-btn tip-hover-only" data-hints="${x.p.id}"${tipAttr(hintsTip(s.issues))}><span class="dot ${s.sev}"></span>${s.issues.length} Hinweis(e) <i class="i">ⓘ</i></button>` : '<span class="ampel"><span class="dot g"></span>ok</span>'}</td></tr>`; }).join('')}
     </tbody></table></div>`;
   $$('#ovAmpel [data-pub]').forEach(b => b.onclick = () => openPublisher(b.dataset.pub));
+  $$('#ovAmpel [data-hints]').forEach(b => b.onclick = () => openHints(b.dataset.hints));
   const seg = segmentDeviations().filter(x => isNum(x.dBud.abs) && Math.abs(x.dBud.abs) > 1);
   const pos = seg.filter(x => x.dBud.abs > 0).sort((a, b) => b.dBud.abs - a.dBud.abs).slice(0, 3), neg = seg.filter(x => x.dBud.abs < 0).sort((a, b) => a.dBud.abs - b.dBud.abs).slice(0, 3);
   const row = x => `<div class="list-row issue" data-pub="${x.p.id}"><span class="l"><b>${x.p.name}</b> · ${x.f.name}<small>${fcName} ${fmtEur(lv(x.fc))} · Budget ${fmtEur(lv(x.bud))}</small></span><span class="num ${cls(x.dBud.abs)}" style="white-space:nowrap;text-align:right"><b>${fmtEur(x.dBud.abs, true)}</b> <small>(${fmtPct(x.dBud.rel, 1, true)})</small></span></div>`;
@@ -1849,7 +1909,7 @@ function renderQuality() {
     <div class="card mt"><div class="card-head"><div><h3>Datenqualität je Publisher</h3><div class="sub">Ampel: Grün = vollständig und plausibel · Gelb = kleinere Auffälligkeiten / Prüfbedarf · Rot = wesentliche Daten fehlen oder starke Abweichungen</div></div></div>
       <div class="tbl-wrap" style="max-height:none"><table class="tbl"><thead><tr><th>Publisher</th><th>Template-Status</th><th class="n">Fehlende Werte</th><th>Auffälligkeiten</th><th>Letzte Aktualisierung</th><th>Datenqualitätsstatus</th></tr></thead><tbody>
       ${q.pubStatus.map(s => `<tr><td><button class="link" data-pub="${s.p.id}">${s.p.name}</button></td><td>${s.tplReceived}/${s.tplTotal} eingegangen</td><td class="n">${s.missing}</td>
-        <td style="white-space:normal">${s.issues.length ? s.issues.map(i => `<button class="chip ${i.sev === 'r' ? 'neg' : 'warn'}" style="border:0;cursor:pointer;margin:1px" data-issue="${i.id}">${issueShort(i)}</button>`).join(' ') : '<span class="muted">keine</span>'}</td>
+        <td style="white-space:normal">${s.issues.length ? s.issues.map(i => `<button class="chip tip-hover-only ${i.sev === 'r' ? 'neg' : 'warn'}" style="border:0;cursor:pointer;margin:1px" data-issue="${i.id}"${tipAttr(`<b>${esc(i.title)}</b><br>${esc(i.detail)}<br><i>Klick: Details</i>`)}>${issueShort(i)}</button>`).join(' ') : '<span class="muted">keine</span>'}</td>
         <td>${s.updated || '—'}</td><td><span class="ampel"><span class="dot ${s.sev}"></span>${sevText[s.sev]}</span></td></tr>`).join('')}
       </tbody></table></div></div>
     <div class="grid g2 mt">
@@ -1864,7 +1924,20 @@ function renderQuality() {
 }
 function issueShort(i) { return { template: 'Template fehlt', review: 'in Prüfung', missing: 'fehlender Wert', implausible: 'unplausibel', mapping: 'Zuordnung', yoy: 'VJ > 10 %', tkp: 'TKP', util: 'Auslastung' }[i.type] + ' · ' + FMT[i.fmt].name; }
 function issueList(list) {
-  return list.length ? list.map(i => `<div class="list-row issue" data-issue="${i.id}"><span class="l"><b>${esc(i.title)}</b><small>${esc(i.rule)}</small></span><span class="num">${i.value ? esc(i.value) : ''} ›</span></div>`).join('') : '<div class="empty">Keine Einträge für die aktuelle Auswahl</div>';
+  return list.length ? list.map(i => `<div class="list-row issue tip-hover-only" data-issue="${i.id}"${tipAttr(`<b>${esc(i.title)}</b><br>${esc(i.detail)}`)}><span class="l"><b>${esc(i.title)}</b><small>${esc(i.rule)}</small></span><span class="num">${i.value ? esc(i.value) : ''} ›</span></div>`).join('') : '<div class="empty">Keine Einträge für die aktuelle Auswahl</div>';
+}
+function hintsTip(list) {
+  return `<b>${list.length} Hinweis(e)</b><br>${list.slice(0, 6).map(i => `<span class="dot ${i.sev}" style="width:7px;height:7px"></span> ${esc(i.title)}`).join('<br>')}${list.length > 6 ? `<br>… und ${list.length - 6} weitere` : ''}<br><i>Klick: alle Hinweise anzeigen</i>`;
+}
+function openHints(pubId) {
+  const list = runQualityChecks().issues.filter(i => i.pub === pubId);
+  $('#modal').innerHTML = `<div class="modal-head"><div><h3>Hinweise: ${esc(PUB[pubId].name)}</h3><div class="sub">${list.length} Hinweis(e) · ${esc(VER[S.version].label)} · Klick auf einen Hinweis zeigt Befund, Regel und Empfehlung</div></div><button class="btn" id="mClose">✕</button></div>
+    <div class="list">${issueList(list)}</div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap"><button class="btn" id="mPub">Publisher-Details</button><button class="btn primary" id="mQ">Zur Datenqualität</button></div>`;
+  $('#modalBg').classList.add('on');
+  $('#mClose').onclick = closeModal; $('#mPub').onclick = () => openPublisher(pubId);
+  $('#mQ').onclick = () => { closeModal(); S.page = 'quality'; renderAll(); $('#main').scrollTop = 0; };
+  $$('#modal [data-issue]').forEach(b => b.onclick = () => openIssue(list.find(i => i.id === b.dataset.issue)));
 }
 function openIssue(i) {
   if (!i) return;
@@ -2950,8 +3023,15 @@ function runChatAction(label, fn) {
     renderAnswer(typing, res);
   }, 300);
 }
+function setChatOpen(open) {
+  document.body.classList.toggle('chat-open', open);
+  const fab = $('#chatFab'); fab.setAttribute('aria-expanded', open); fab.setAttribute('aria-label', open ? 'Chat schließen' : 'Controlling AI Assistant öffnen');
+  fab.querySelector('.fab-ic').textContent = open ? '✕' : '💬'; fab.querySelector('.fab-l').textContent = open ? 'Schließen' : 'AI Assistant';
+  if (open && matchMedia('(hover: hover)').matches) setTimeout(() => $('#chatInput').focus(), 60);
+}
 function askChat(text, shown) {
   text = String(text || '').trim(); if (!text) return;
+  setChatOpen(true);
   if (text === '@open-scenario') { openScenarioFromChat(); return; }
   // Antwort auf eine Rückfrage des Assistenten (mehrstufiger Dialog)
   if (CHAT.pending) { const low = text.toLowerCase(), hit = CHAT.pending.find(p => p.re.test(low)); CHAT.pending = null; if (hit) { runChatAction(text, hit.run); return; } }
@@ -2988,8 +3068,9 @@ function welcome() {
 function initChat() {
   $('#chatForm').onsubmit = e => { e.preventDefault(); const i = $('#chatInput'); askChat(i.value); i.value = ''; };
   $('#chatReset').onclick = () => { CHAT.pending = null; welcome(); toast('Chat zurückgesetzt'); };
-  $('#chatClose').onclick = () => document.body.classList.add('chat-closed');
-  $('#chatFab').onclick = () => { document.body.classList.toggle('chat-closed'); if (!document.body.classList.contains('chat-closed')) document.querySelector('.chat').scrollIntoView({ behavior: 'smooth' }); };
+  $('#chatClose').onclick = () => setChatOpen(false);
+  $('#chatFab').onclick = () => setChatOpen(!document.body.classList.contains('chat-open'));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.body.classList.contains('chat-open') && !$('#modalBg').classList.contains('on')) setChatOpen(false); });
   $$('#roleSeg button').forEach(b => b.onclick = () => {
     S.role = b.dataset.role; $$('#roleSeg button').forEach(x => x.classList.toggle('on', x === b));
     addMsg('bot', `<div class="role-tag">Rollenwechsel</div><p>Ab jetzt antworte ich für <b>${ROLE[S.role]}</b>${{ brand: ' – verständlich und praxisnah.', controlling: ' – mit Berechnungswegen, Quellen und Auswirkungen.', gf: ' – kurz und entscheidungsorientiert.' }[S.role]}</p>`);
