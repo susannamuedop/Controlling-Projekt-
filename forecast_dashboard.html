@@ -79,6 +79,9 @@ select.sel:focus,.ms-btn:focus{outline:2px solid var(--blue-2);outline-offset:1p
 .process ol{margin:4px 0 0;padding-left:16px}
 /* Templates je Publisher in der Navigation */
 .tpl-title{display:flex;align-items:center;justify-content:space-between}
+.nav .tpl-toggle,.tpl-backdrop,.tpl-sheet-head{display:none}
+.nav .tpl-toggle .n{margin-left:2px;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:var(--pink);color:#fff;font-size:10.5px;font-weight:700;display:inline-grid;place-items:center}
+.nav .tpl-toggle .n:empty{display:none}
 .tpl-title span{font-weight:600;color:#a6a6a6;letter-spacing:0}
 .tpl-nav{display:flex;flex-direction:column;gap:1px}
 .tpl-pub{display:flex;align-items:center;border-radius:7px}
@@ -274,7 +277,23 @@ body.chat-open .chat{display:flex;animation:chatIn .18s ease-out}
   .topbar>*,.disclaimer>*{min-width:0;max-width:100%}
   .nav{flex-direction:row;overflow-x:auto;padding:8px;gap:4px}
   .nav button{width:auto;white-space:nowrap}
-  .nav-title,.nav-sep,.nav-foot,.process,.tpl-nav{display:none}
+  .nav-title,.nav-sep,.nav-foot,.process{display:none}
+  /* Templates auf dem Handy: Button in der Leiste öffnet ein Auswahl-Panel von unten */
+  .nav .tpl-toggle{display:flex;order:-1;background:var(--navy-2);color:#fff;font-weight:600}
+  .tpl-sheet{display:none}
+  body.tpl-open{overflow:hidden}
+  body.tpl-open .tpl-backdrop{display:block;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:92}
+  body.tpl-open .tpl-sheet{display:flex;flex-direction:column;position:fixed;left:0;right:0;bottom:0;max-height:78vh;z-index:93;background:var(--navy);border-radius:16px 16px 0 0;padding:0 10px calc(12px + env(safe-area-inset-bottom,0px));box-shadow:0 -10px 40px rgba(0,0,0,.35);animation:sheetIn .2s ease-out}
+  @keyframes sheetIn{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+  body.tpl-open .chat-fab{display:none}
+  .tpl-sheet-head{display:flex;align-items:center;justify-content:space-between;padding:14px 6px 8px;color:#fff;font-size:15px;position:sticky;top:0}
+  .nav .tpl-sheet-head button{width:auto;padding:7px 14px;border-radius:999px;background:var(--pink);color:#fff;font-weight:600;font-size:13px}
+  .tpl-sheet .tpl-title{display:flex}
+  .tpl-sheet .tpl-nav{overflow:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
+  .nav .tpl-pubsel,.nav .tpl-item{padding-top:11px;padding-bottom:11px;font-size:14.5px;white-space:normal}
+  .nav .tpl-chev{width:36px;padding:11px 0 11px 10px}
+  .tpl-sheet .cb{width:18px;height:18px;font-size:12px}
+  .tpl-items{margin-left:30px}
   .g2{grid-template-columns:1fr}
   .kmap{grid-template-columns:1fr 1fr}
   .tmatrix{grid-template-columns:90px repeat(4,minmax(0,1fr))}
@@ -408,8 +427,13 @@ body.chat-open .chat-fab{background:var(--navy);box-shadow:0 8px 24px rgba(0,0,0
     <div class="nav-sep"></div>
     <button data-page="method"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg>Methodik &amp; Annahmen</button>
     <div class="nav-sep"></div>
-    <div class="nav-title tpl-title">Templates <span id="tplNavCount"></span></div>
-    <div class="tpl-nav" id="tplNav" aria-label="Templates je Publisher und Werbeform"></div>
+    <button type="button" class="tpl-toggle" id="tplToggle" aria-expanded="false" aria-controls="tplSheet"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Templates<span class="n" id="tplToggleN"></span></button>
+    <div class="tpl-backdrop" id="tplBackdrop"></div>
+    <div class="tpl-sheet" id="tplSheet" role="dialog" aria-label="Templates auswählen">
+      <div class="tpl-sheet-head"><b>Templates auswählen</b><button type="button" id="tplDone">Fertig</button></div>
+      <div class="nav-title tpl-title">Templates <span id="tplNavCount"></span></div>
+      <div class="tpl-nav" id="tplNav" aria-label="Templates je Publisher und Werbeform"></div>
+    </div>
     <div class="process">
       <div class="nav-title" style="padding-left:0">Prozess</div>
       <ol>
@@ -3137,6 +3161,11 @@ function setTplFilter(set) {
   renderAll();
   toast(set.size ? `Auswahl: ${set.size} Template${set.size > 1 ? 's' : ''}` : 'Template-Auswahl aufgehoben – alle Templates');
 }
+function setTplSheet(open) {
+  document.body.classList.toggle('tpl-open', open);
+  $('#tplToggle').setAttribute('aria-expanded', open);
+  if (open) { renderTplNav(); $('#tplNav').scrollTop = 0; }
+}
 function renderTplNav() {
   const el = $('#tplNav'); if (!el) return;
   const q = navQuality(), tpl = q.tpl, sel = S.tplFilter;
@@ -3150,12 +3179,13 @@ function renderTplNav() {
     const nSel = ts.filter(t => sel.has(t.key)).length, pst = nSel === 0 ? 'none' : nSel === ts.length ? 'all' : 'part';
     return `<div class="tpl-pub ${open ? 'open' : ''} ${nSel ? 'on' : ''}">
         <button type="button" class="tpl-chev" data-open="${p.id}" aria-expanded="${open}" aria-label="${esc(p.name)} auf-/zuklappen"><span class="chev">▶</span></button>
-        <button type="button" class="tpl-pubsel" data-selpub="${p.id}" aria-pressed="${pst === 'all'}"${tipAttr(`<b>${esc(p.name)}</b>${p.segment ? ' · ' + esc(p.segment) : ''}<br>${rec} von ${ts.length} Templates eingegangen<br><i>Klick: alle Werbeformen von ${esc(p.name)} ${pst === 'all' ? 'abwählen' : 'auswählen'}</i>`)}>${box(pst)}<span class="dot ${ps}"></span>${esc(p.name)}<span class="cnt">${nSel ? nSel + ' von ' : ''}${ts.length}</span></button>
+        <button type="button" class="tpl-pubsel tip-hover-only" data-selpub="${p.id}" aria-pressed="${pst === 'all'}"${tipAttr(`<b>${esc(p.name)}</b>${p.segment ? ' · ' + esc(p.segment) : ''}<br>${rec} von ${ts.length} Templates eingegangen<br><i>Klick: alle Werbeformen von ${esc(p.name)} ${pst === 'all' ? 'abwählen' : 'auswählen'}</i>`)}>${box(pst)}<span class="dot ${ps}"></span>${esc(p.name)}<span class="cnt">${nSel ? nSel + ' von ' : ''}${ts.length}</span></button>
       </div>
       <div class="tpl-items">${ts.map((t, k) => { const on = sel.has(t.key);
-        return `<button type="button" class="tpl-item ${on ? 'on' : ''}" data-key="${t.key}" aria-pressed="${on}"${tipAttr(`<b>${esc(p.name)} – ${esc(t.f.name)}</b><br>Status: ${esc(t.status)}${t.fallback ? ' (Fallback ' + esc(VER[t.fallback].label) + ')' : ''}${t.updated ? '<br>Aktualisiert: ' + esc(t.updated) : ''}<br><i>Klick: ${on ? 'aus Auswahl entfernen' : 'zur Auswahl hinzufügen'}</i>`)}>${box(on ? 'all' : 'none')}<span class="dot ${sv[k]}"></span>${esc(t.f.name)}</button>`; }).join('')}</div>`;
+        return `<button type="button" class="tpl-item tip-hover-only ${on ? 'on' : ''}" data-key="${t.key}" aria-pressed="${on}"${tipAttr(`<b>${esc(p.name)} – ${esc(t.f.name)}</b><br>Status: ${esc(t.status)}${t.fallback ? ' (Fallback ' + esc(VER[t.fallback].label) + ')' : ''}${t.updated ? '<br>Aktualisiert: ' + esc(t.updated) : ''}<br><i>Klick: ${on ? 'aus Auswahl entfernen' : 'zur Auswahl hinzufügen'}</i>`)}>${box(on ? 'all' : 'none')}<span class="dot ${sv[k]}"></span>${esc(t.f.name)}</button>`; }).join('')}</div>`;
   }).join('');
   $('#tplNavCount').textContent = `${q.received}/${q.total}`;
+  $('#tplToggleN').textContent = sel.size ? String(sel.size) : '';
   $$('#tplNav [data-open]').forEach(b => b.onclick = () => { const id = b.dataset.open; S.navOpen.has(id) ? S.navOpen.delete(id) : S.navOpen.add(id); renderTplNav(); });
   $$('#tplNav [data-selpub]').forEach(b => b.onclick = () => {
     const id = b.dataset.selpub, keys = tpl.filter(t => t.p.id === id).map(t => t.key), s2 = new Set(sel);
@@ -3172,6 +3202,10 @@ function renderAll() {
   updateChatCtx(); renderSuggestions();
 }
 function initNav() {
+  $('#tplToggle').onclick = () => setTplSheet(!document.body.classList.contains('tpl-open'));
+  $('#tplDone').onclick = () => setTplSheet(false);
+  $('#tplBackdrop').onclick = () => setTplSheet(false);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.body.classList.contains('tpl-open')) setTplSheet(false); });
   $$('#nav [data-step]').forEach(b => b.onclick = () => { const [pg, tab] = b.dataset.step.split(':'); S.page = pg; if (tab) S.sapTab = tab; renderAll(); $('#main').scrollTop = 0; $$('#nav [data-step]').forEach(x => x.classList.toggle('on', x === b)); });
   $$('#nav button[data-page]').forEach(b => b.onclick = () => { S.page = b.dataset.page; renderAll(); $('#main').scrollTop = 0; });
 }
