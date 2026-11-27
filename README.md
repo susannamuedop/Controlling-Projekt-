@@ -26,6 +26,8 @@ Dashboard und Dokumentation folgen dem RTL-Corporate-Design: Pink (`#E6007E`) al
 - Excel-Import mit automatischer Spaltenerkennung und 8-stufiger Prüfung
 - GuV-Überleitung Netto 2 → Netto 4 und SAP-Upload-Datei (simuliert)
 - Freigabe-Workflow Brand → Controlling → Geschäftsführung
-- Simulierter, regelbasierter Controlling-Chat mit drei Rollen
+- Simulierter, regelbasierter Controlling-Chat mit drei Rollen – als Button unten rechts, öffnet sich per Klick (auf dem Handy als Vollbild)
+- Hinweise und Erklärungen erscheinen beim Überfahren mit der Maus bzw. beim Antippen (Handy/Tablet); „Hinweis(e)“ in der Ampelübersicht öffnet per Klick die vollständige Liste
+- Ansicht passt sich automatisch an Handy, Tablet, Laptop und große Bildschirme an
 
 > **Hinweis:** KI-Prototyp. Ergebnisse können Fehler enthalten und müssen vor Freigabe durch Controlling und Geschäftsführung geprüft werden. Keine produktive Systemanbindung.
