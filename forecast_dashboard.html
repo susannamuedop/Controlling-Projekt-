@@ -81,18 +81,31 @@ select.sel:focus,.ms-btn:focus{outline:2px solid var(--blue-2);outline-offset:1p
 .tpl-title{display:flex;align-items:center;justify-content:space-between}
 .tpl-title span{font-weight:600;color:#a6a6a6;letter-spacing:0}
 .tpl-nav{display:flex;flex-direction:column;gap:1px}
-.nav .tpl-pub,.nav .tpl-item{display:flex;align-items:center;gap:8px;width:100%;border:0;background:transparent;color:#d9d9d9;cursor:pointer;text-align:left;border-radius:7px}
-.nav .tpl-pub{padding:6px 10px;font-size:12.5px;font-weight:500}
-.nav .tpl-pub .chev{width:10px;font-size:10px;color:#8c8c8c;transition:transform .15s}
-.nav .tpl-pub.open .chev{transform:rotate(90deg)}
-.nav .tpl-pub .cnt{margin-left:auto;font-size:10.5px;color:#8c8c8c;font-variant-numeric:tabular-nums}
-.nav .tpl-pub.on{color:#fff;font-weight:600}
-.tpl-items{display:none;flex-direction:column;gap:1px;margin:1px 0 5px 19px;border-left:1px solid #333;padding-left:6px}
+.tpl-pub{display:flex;align-items:center;border-radius:7px}
+.tpl-pub:hover{background:var(--navy-2)}
+.nav .tpl-chev,.nav .tpl-pubsel,.nav .tpl-item{display:flex;align-items:center;gap:8px;border:0;background:transparent;color:#d9d9d9;cursor:pointer;text-align:left;border-radius:7px}
+.nav .tpl-chev{width:24px;flex:none;padding:6px 0 6px 8px}
+.nav .tpl-pubsel{flex:1;min-width:0;padding:6px 10px 6px 2px;font-size:12.5px;font-weight:500}
+.nav .tpl-chev:hover,.nav .tpl-pubsel:hover{background:transparent;color:#fff}
+.tpl-pub .chev{width:10px;font-size:10px;color:#8c8c8c;transition:transform .15s}
+.tpl-pub.open .chev{transform:rotate(90deg)}
+.tpl-pub .cnt{margin-left:auto;font-size:10.5px;color:#8c8c8c;font-variant-numeric:tabular-nums;white-space:nowrap}
+.nav .tpl-pub.on .tpl-pubsel{color:#fff;font-weight:600}
+.cb{width:14px;height:14px;flex:none;border:1.5px solid #6b6b6b;border-radius:4px;display:inline-grid;place-items:center;font-size:10px;font-weight:700;line-height:1;color:#fff}
+.cb.all,.cb.part{background:var(--pink);border-color:var(--pink)}
+.tpl-selbar{white-space:nowrap;display:flex;align-items:center;justify-content:space-between;gap:6px;margin:0 4px 6px;padding:6px 8px;border-radius:7px;background:rgba(230,0,126,.16);color:#fff;font-size:11.5px;font-weight:600}
+.nav .tpl-selbar button{display:inline;width:auto;padding:2px 6px;font-size:11px;color:#ffb3d9;border-radius:5px}
+.nav .tpl-selbar button:hover{background:rgba(255,255,255,.08);color:#fff}
+.tpl-hint{font-size:11px;color:#8c8c8c;padding:0 10px 6px}
+.pill-sel{cursor:pointer;background:var(--pink-soft);border-color:var(--pink-3);color:var(--pink-2);font-family:inherit}
+.pill-sel:hover{background:#fbd3e8}
+.tpl-items{display:none;flex-direction:column;gap:1px;margin:1px 0 5px 22px;border-left:1px solid #333;padding-left:6px}
 .tpl-pub.open+.tpl-items{display:flex}
 .nav .tpl-item{padding:5px 8px;font-size:12px;color:#bfbfbf}
-.nav .tpl-pub:hover,.nav .tpl-item:hover{background:var(--navy-2);color:#fff}
-.nav .tpl-item.on{background:var(--navy-2);color:#fff;font-weight:600;box-shadow:inset 2px 0 0 var(--pink)}
-.nav .tpl-item .dot,.nav .tpl-pub .dot{width:7px;height:7px}
+.nav .tpl-item{width:100%}
+.nav .tpl-item:hover{background:var(--navy-2);color:#fff}
+.nav .tpl-item.on{color:#fff;font-weight:600}
+.tpl-item .dot,.tpl-pub .dot{width:7px;height:7px}
 .nav .process button{display:inline;width:auto;padding:2px 6px;margin-left:-6px;border-radius:5px;font-size:11.5px;color:#a6a6a6}
 .nav .process button:hover{background:var(--navy-2);color:#fff}
 .nav .process button.on{color:#fff;font-weight:600}
@@ -687,6 +700,7 @@ const S = {
   version: 'FC4',
   months: new Set([...Array(12).keys()]),
   pubs: new Set(DATA.publishers.map(p => p.id)),
+  tplFilter: new Set(), // Auswahl einzelner Templates (Publisher-Werbeform); leer = alle
   ges: new Set([...DATA.gesellschaften.map(g => g.id), NA_GES]),
   level: 'N2',
   page: 'overview',
@@ -699,8 +713,9 @@ const S = {
 /* ---------- Filterfunktionen ---------- */
 function rowsFor(versionId, opt = {}) {
   const months = opt.months || S.months, pubs = opt.pubs || S.pubs, ges = opt.ges || S.ges;
+  const tpl = opt.tpl || S.tplFilter;
   return ROWS.filter(r => r.v === versionId && months.has(r.m) && pubs.has(r.pub) && ges.has(r.ges || NA_GES)
-    && (!opt.fmt || r.fmt === opt.fmt));
+    && (!opt.fmt || r.fmt === opt.fmt) && (!tpl || !tpl.size || tpl.has(r.pub + '-' + r.fmt)));
 }
 // Vergleichsversionen: bei Excel-Import (und daraus abgeleiteten Varianten) Budget/Vorjahr aus der Datei
 const isImportVersion = (v = S.version) => VER[v] && (VER[v].kind === 'import' || (VER[v].base && VER[VER[v].base] && VER[VER[v].base].kind === 'import'));
@@ -817,6 +832,7 @@ function kiSuggestionRows(versionId = S.version, opt = {}) {
   if (!V || V.kind !== 'fc' || !V.istMonths || V.istMonths >= 12 || isImportVersion(versionId)) return [];
   const cut = V.istMonths, months = opt.months || S.months, pubs = opt.pubs || S.pubs, ges = opt.ges || S.ges, out = [];
   DATA.publishers.filter(p => pubs.has(p.id)).forEach(p => DATA.formats.forEach(f => {
+    if (S.tplFilter.size && !S.tplFilter.has(p.id + '-' + f.id)) return;
     const tr = ytdTrend(versionId, p.id, f.id, cut);
     for (let m = cut; m < 12; m++) {
       if (!months.has(m)) continue;
@@ -869,12 +885,13 @@ function templateList(versionId = S.version) {
   if (isImportVersion(versionId)) {
     // Import: „Template“ = in der Datei enthaltene Kombination Publisher × Werbeform
     const keys = new Set(ROWS.filter(r => r.v === 'IMP').map(r => r.pub + '-' + r.fmt));
-    return [...keys].filter(k => S.pubs.has(k.split('-')[0])).map(k => { const [p, f] = k.split('-');
+    return [...keys].filter(k => S.pubs.has(k.split('-')[0]) && (!S.tplFilter.size || S.tplFilter.has(k))).map(k => { const [p, f] = k.split('-');
       return { key: k, p: PUB[p], f: FMT[f], status: 'eingegangen', updated: VER.IMP.stand }; });
   }
   const map = DATA.templates[baseId] || {}, out = [];
   DATA.publishers.filter(p => S.pubs.has(p.id) && !p.imported).forEach(p => DATA.formats.filter(f => !f.imported).forEach(f => {
     const key = p.id + '-' + f.id, t = map[key] || { status: 'eingegangen' };
+    if (S.tplFilter.size && !S.tplFilter.has(key)) return;
     out.push({ key, p, f, status: t.status, fallback: t.fallback,
       updated: t.status === 'ausstehend' ? null : (baseId === 'FC4' ? DATA.templateUpdated[p.id] : VER[baseId] ? VER[baseId].stand : '—') });
   }));
@@ -982,7 +999,8 @@ function monthRangeLabel(set = S.months) {
 function pubLabel(set = S.pubs) { return set.size === DATA.publishers.length ? 'alle Publisher' : [...set].map(id => PUB[id].name).join(', '); }
 function gesLabel(set = S.ges) { const real = [...set].filter(g => g !== NA_GES); return real.length === DATA.gesellschaften.length ? 'alle Gesellschaften' : real.map(id => GES[id].name).join(', ') || 'keine Gesellschaft'; }
 function levelLabel(l = S.level) { return l === 'N4' ? 'Netto 4' : 'Netto 2'; }
-function contextLabel() { return `${VER[S.version].label} · ${monthRangeLabel()} · ${pubLabel()} · ${gesLabel()} · ${levelLabel()}`; }
+function tplLabel(set = S.tplFilter) { if (!set.size) return ''; const l = [...set].map(k => { const [p, f] = k.split('-'); return `${PUB[p] ? PUB[p].name : p} ${FMT[f] ? FMT[f].name : f}`; }); return 'Templates: ' + (l.length > 3 ? l.slice(0, 3).join(', ') + ` +${l.length - 3}` : l.join(', ')); }
+function contextLabel() { return `${VER[S.version].label} · ${monthRangeLabel()} · ${pubLabel()} · ${gesLabel()}${S.tplFilter.size ? ' · ' + tplLabel() : ''} · ${levelLabel()}`; }
 function versionSourceLabel(v = S.version) {
   const V = VER[v]; if (V.kind === 'budget') return 'Budgetplanung 2026';
   if (V.kind === 'import') return `Excel-Import „${V.file}“, Blatt „${V.sheet}“ (${V.records} Datensätze übernommen)`;
@@ -1539,7 +1557,7 @@ function initHeader() {
   $('#btnReset').onclick = resetFilters;
 }
 function resetFilters() {
-  S.months = new Set([...Array(12).keys()]); S.level = 'N2';
+  S.months = new Set([...Array(12).keys()]); S.level = 'N2'; S.tplFilter = new Set();
   if (!isImportVersion()) S.version = 'FC4';
   rebuildFilters(); MS.month.render(); renderAll(); toast('Alle Filter zurückgesetzt');
 }
@@ -1557,7 +1575,9 @@ function renderHeader() {
   $('#statusPills').innerHTML = `${isImportVersion() ? `<span class="pill"><span class="dot b"></span>Import: ${VER.IMP ? VER.IMP.records : 0} Datensätze</span>` : `<span class="pill"${tipAttr(`<b>Template-Eingang</b><br>${q.received} von ${q.total} eingegangen${q.pending ? '<br>Ausstehend: ' + q.tpl.filter(t => t.status === 'ausstehend').map(t => esc(t.p.name + ' ' + t.f.name)).join(', ') : ''}`)}><span class="dot ${q.pending ? 'y' : 'g'}"></span>Templates ${q.received}/${q.total}</span>`}
     <span class="pill"${tipAttr(`<b>Kritische Prüfpunkte</b><br>${q.issues.filter(i => i.sev === 'r').slice(0, 6).map(i => '• ' + esc(i.title)).join('<br>') || 'keine'}`)}><span class="dot ${crit ? 'r' : 'g'}"></span>${crit} kritische Prüfpunkte</span>
     <span class="pill"><span class="dot ${S.version === 'BUD' ? 'n' : a}"></span>${S.version === 'BUD' ? 'Budget = Referenz' : 'ggü. Budget ' + fmtPct(k.dBud.rel, 1, true)}</span>
+    ${S.tplFilter.size ? `<button type="button" class="pill pill-sel" id="pillTplSel"${tipAttr(`<b>Template-Auswahl aktiv</b><br>${esc(tplLabel())}<br><i>Klick: Auswahl aufheben</i>`)}>☑ ${S.tplFilter.size} Template${S.tplFilter.size > 1 ? 's' : ''} ausgewählt <b>✕</b></button>` : ''}
     <span class="pill" title="Freigabe durch Brand, Controlling und Geschäftsführung"><span class="dot ${approvalDone() ? 'g' : approvalCount() ? 'y' : 'n'}"></span>Freigabe ${approvalCount()}/${APPROVAL_STEPS.length}</span>`;
+  if ($('#pillTplSel')) $('#pillTplSel').onclick = () => setTplFilter(new Set());
   $('#dqBadge').textContent = crit || ''; $('#dqBadge').style.display = crit ? '' : 'none';
 }
 function pageHead(title, desc) {
@@ -3106,63 +3126,43 @@ function initChat() {
    ===================================================================== */
 const PAGES = { overview: renderOverview, forecast: renderForecast, scenario: renderScenario, quality: renderQuality, sap: renderSap, method: renderMethod };
 function syncNav() { $$('#nav button[data-page]').forEach(b => b.classList.toggle('on', b.dataset.page === S.page)); $$('.page').forEach(p => p.classList.toggle('on', p.id === 'page-' + S.page)); }
-/* ---------- Navigation: Templates je Publisher × Werbeform, einzeln anklickbar ---------- */
-S.navOpen = new Set(); S.tplSel = null;
-function navQuality() { const save = S.pubs; S.pubs = new Set(pubsInVersion()); try { return runQualityChecks(); } finally { S.pubs = save; } }
+/* ---------- Navigation: Templates je Publisher × Werbeform als Mehrfachauswahl (filtert das Dashboard) ---------- */
+S.navOpen = new Set();
+function navQuality() { const sp = S.pubs, st = S.tplFilter; S.pubs = new Set(pubsInVersion()); S.tplFilter = new Set(); try { return runQualityChecks(); } finally { S.pubs = sp; S.tplFilter = st; } }
+function setTplFilter(set) {
+  S.tplFilter = set;
+  // Publisher-Filter folgt der Auswahl, damit Kopfzeile und Tabellen dazu passen
+  S.pubs = set.size ? new Set([...set].map(k => k.split('-')[0])) : new Set(pubsInVersion());
+  if (MS.pub) MS.pub.render();
+  renderAll();
+  toast(set.size ? `Auswahl: ${set.size} Template${set.size > 1 ? 's' : ''}` : 'Template-Auswahl aufgehoben – alle Templates');
+}
 function renderTplNav() {
   const el = $('#tplNav'); if (!el) return;
-  const q = navQuality(), tpl = q.tpl;
+  const q = navQuality(), tpl = q.tpl, sel = S.tplFilter;
   const sevOf = t => { const iss = q.issues.filter(i => i.pub === t.p.id && i.fmt === t.f.id && i.type !== 'template' && i.type !== 'review');
     return t.status === 'ausstehend' || iss.some(i => i.sev === 'r') ? 'r' : t.status === 'in Prüfung' || iss.length ? 'y' : 'g'; };
   const pubs = [...new Map(tpl.map(t => [t.p.id, t.p])).values()];
-  el.innerHTML = pubs.map(p => {
+  const box = st => `<span class="cb ${st}" aria-hidden="true">${st === 'all' ? '✓' : st === 'part' ? '–' : ''}</span>`;
+  el.innerHTML = (sel.size ? `<div class="tpl-selbar"><span>${sel.size} ausgewählt</span><button type="button" id="tplClear" aria-label="Auswahl aufheben">✕ aufheben</button></div>` : '<div class="tpl-hint">Klicken, um Templates auszuwählen</div>') + pubs.map(p => {
     const ts = tpl.filter(t => t.p.id === p.id), rec = ts.filter(t => t.status !== 'ausstehend').length, sv = ts.map(sevOf);
-    const ps = sv.includes('r') ? 'r' : sv.includes('y') ? 'y' : 'g', open = S.navOpen.has(p.id), on = S.pubs.size === 1 && S.pubs.has(p.id);
-    return `<button type="button" class="tpl-pub ${open ? 'open' : ''} ${on ? 'on' : ''}" data-tp="${p.id}" aria-expanded="${open}"${tipAttr(`<b>${esc(p.name)}</b>${p.segment ? ' · ' + esc(p.segment) : ''}<br>${rec} von ${ts.length} Templates eingegangen<br><i>Klick: Werbeformen anzeigen und nach ${esc(p.name)} filtern</i>`)}><span class="chev">▶</span><span class="dot ${ps}"></span>${esc(p.name)}<span class="cnt">${rec}/${ts.length}</span></button>
-      <div class="tpl-items">${ts.map((t, k) => { const sel = S.tplSel && S.tplSel.pub === p.id && S.tplSel.fmt === t.f.id;
-        return `<button type="button" class="tpl-item ${sel ? 'on' : ''}" data-tp="${p.id}" data-tf="${t.f.id}"${tipAttr(`<b>${esc(p.name)} – ${esc(t.f.name)}</b><br>Status: ${esc(t.status)}${t.fallback ? ' (Fallback ' + esc(VER[t.fallback].label) + ')' : ''}${t.updated ? '<br>Aktualisiert: ' + esc(t.updated) : ''}<br><i>Klick: Template öffnen</i>`)}><span class="dot ${sv[k]}"></span>${esc(t.f.name)}</button>`; }).join('')}</div>`;
+    const ps = sv.includes('r') ? 'r' : sv.includes('y') ? 'y' : 'g', open = S.navOpen.has(p.id);
+    const nSel = ts.filter(t => sel.has(t.key)).length, pst = nSel === 0 ? 'none' : nSel === ts.length ? 'all' : 'part';
+    return `<div class="tpl-pub ${open ? 'open' : ''} ${nSel ? 'on' : ''}">
+        <button type="button" class="tpl-chev" data-open="${p.id}" aria-expanded="${open}" aria-label="${esc(p.name)} auf-/zuklappen"><span class="chev">▶</span></button>
+        <button type="button" class="tpl-pubsel" data-selpub="${p.id}" aria-pressed="${pst === 'all'}"${tipAttr(`<b>${esc(p.name)}</b>${p.segment ? ' · ' + esc(p.segment) : ''}<br>${rec} von ${ts.length} Templates eingegangen<br><i>Klick: alle Werbeformen von ${esc(p.name)} ${pst === 'all' ? 'abwählen' : 'auswählen'}</i>`)}>${box(pst)}<span class="dot ${ps}"></span>${esc(p.name)}<span class="cnt">${nSel ? nSel + ' von ' : ''}${ts.length}</span></button>
+      </div>
+      <div class="tpl-items">${ts.map((t, k) => { const on = sel.has(t.key);
+        return `<button type="button" class="tpl-item ${on ? 'on' : ''}" data-key="${t.key}" aria-pressed="${on}"${tipAttr(`<b>${esc(p.name)} – ${esc(t.f.name)}</b><br>Status: ${esc(t.status)}${t.fallback ? ' (Fallback ' + esc(VER[t.fallback].label) + ')' : ''}${t.updated ? '<br>Aktualisiert: ' + esc(t.updated) : ''}<br><i>Klick: ${on ? 'aus Auswahl entfernen' : 'zur Auswahl hinzufügen'}</i>`)}>${box(on ? 'all' : 'none')}<span class="dot ${sv[k]}"></span>${esc(t.f.name)}</button>`; }).join('')}</div>`;
   }).join('');
   $('#tplNavCount').textContent = `${q.received}/${q.total}`;
-  $$('#tplNav .tpl-pub').forEach(b => b.onclick = () => {
-    const id = b.dataset.tp;
-    if (S.navOpen.has(id) && S.pubs.size === 1 && S.pubs.has(id)) { S.navOpen.delete(id); S.tplSel = null; S.pubs = new Set(pubsInVersion()); MS.pub.render(); renderAll(); toast('Filter: alle Publisher'); }
-    else { S.navOpen.add(id); setPublisherFilter(id); }
+  $$('#tplNav [data-open]').forEach(b => b.onclick = () => { const id = b.dataset.open; S.navOpen.has(id) ? S.navOpen.delete(id) : S.navOpen.add(id); renderTplNav(); });
+  $$('#tplNav [data-selpub]').forEach(b => b.onclick = () => {
+    const id = b.dataset.selpub, keys = tpl.filter(t => t.p.id === id).map(t => t.key), s2 = new Set(sel);
+    const all = keys.every(k => s2.has(k)); keys.forEach(k => all ? s2.delete(k) : s2.add(k)); S.navOpen.add(id); setTplFilter(s2);
   });
-  $$('#tplNav .tpl-item').forEach(b => b.onclick = () => {
-    const pub = b.dataset.tp, fmt = b.dataset.tf; S.tplSel = { pub, fmt }; S.navOpen.add(pub);
-    if (S.pubs.size === 1 && S.pubs.has(pub)) renderTplNav(); else setPublisherFilter(pub);
-    openTemplate(pub, fmt);
-  });
-}
-/* Template-Detailansicht: Monatswerte, Status, Hinweise */
-function openTemplate(pub, fmt) {
-  const p = PUB[pub], f = FMT[fmt], V = VER[S.version], ai = f.type === 'ai';
-  const rows = ROWS.filter(r => r.v === S.version && r.pub === pub && r.fmt === fmt && S.months.has(r.m)).sort((a, b) => a.m - b.m);
-  const bud = new Map(ROWS.filter(r => r.v === BUDV() && r.pub === pub && r.fmt === fmt).map(r => [r.m, r]));
-  const t = navQuality().tpl.find(x => x.key === pub + '-' + fmt) || { status: '—' };
-  const issues = navQuality().issues.filter(i => i.pub === pub && i.fmt === fmt);
-  const a = agg(rows), b = agg(rows.map(r => bud.get(r.m)).filter(Boolean)), d = dev(lv(a), lv(b));
-  const sc = { 'eingegangen': 'g', 'in Prüfung': 'y', 'ausstehend': 'r' }[t.status] || 'n';
-  const cell = (v, txt, bad) => `<td class="n ${bad || !isNum(v) ? 'cell-neg' : ''}">${isNum(v) ? txt : '—'}</td>`;
-  $('#modal').innerHTML = `<div class="modal-head"><div><h3>Template ${esc(p.name)} – ${esc(f.name)}</h3><div class="sub">${esc(f.long || f.name)} · ${esc(V.label)}${p.owner ? ' · ' + esc(p.owner) : ''} · ${esc(monthRangeLabel())}</div></div><button class="btn" id="mClose">✕</button></div>
-    <div class="grid kpis">
-      ${kpiTile({ label: 'Template-Status', value: `<span class="ampel"><span class="dot ${sc}"></span>${esc(t.status)}</span>`, unit: '', cmp: `${t.fallback ? 'Fallback ' + esc(VER[t.fallback].label) + ' · ' : ''}${t.updated ? 'aktualisiert ' + esc(t.updated) : 'noch nicht eingegangen'}` })}
-      ${kpiTile({ label: `${fcLabel()} (${levelLabel()})`, value: mio(lv(a)), unit: 'Mio. €', cmp: `Budget ${fmtEur(lv(b))}` })}
-      ${kpiTile({ label: 'Abweichung zum Budget', value: fmtPct(d.rel, 1, true).replace(' %', ''), unit: '%', cls: cls(d.rel), cmp: fmtEur(d.abs, true) })}
-      ${kpiTile({ label: 'Hinweise', value: String(issues.length), unit: '', cls: issues.some(i => i.sev === 'r') ? 'neg' : issues.length ? 'warn' : 'pos', cmp: issues.length ? 'siehe unten' : 'keine Auffälligkeiten' })}
-    </div>
-    <div class="card mt"><h3>Monatswerte laut Template</h3><div class="sub">${ai ? 'Treiberkette: Reichweite × AI-Faktor = Possible AIs × Auslastung = Sold AIs / 1.000 × TKP = Netto 2' : 'Pauschalerlös je Monat'} · rot = fehlender oder unplausibler Wert</div>
-      <div class="tbl-wrap mt" style="max-height:none"><table class="tbl"><thead><tr><th>Monat</th><th>Basis</th>${ai ? `<th class="n">${f.reachLabel || 'Reichweite'}</th><th class="n">${f.ratioLabel || 'AI-Faktor'}</th><th class="n">Possible AIs</th><th class="n">Auslastung</th><th class="n">TKP</th>` : '<th class="n">Pauschalerlös</th>'}<th class="n">Netto 2</th><th class="n">Budget N2</th><th class="n">Abw. %</th></tr></thead><tbody>
-      ${rows.map(r => { const bb = bud.get(r.m), dd = dev(r.c.n2, bb ? bb.c.n2 : null);
-        const basis = r.isIst ? '<span class="chip info">Ist</span>' : r.flags.includes('fallback') ? '<span class="chip warn">Fallback</span>' : r.imp ? '<span class="chip grey">Import</span>' : '<span class="chip grey">Template</span>';
-        return `<tr><td>${MONTHS_LONG[r.m]}</td><td>${basis}</td>${ai ? cell(r.reach, fmtCount(r.reach)) + cell(r.ratio, fmtNum(r.ratio, 2)) + cell(r.c.poss, fmtCount(r.c.poss), r.c.missing) + cell(r.util, fmtPct(r.util, 1), isNum(r.util) && r.util > 1) + cell(r.tkp, fmtNum(r.tkp, 2) + ' €') : cell(r.flat, fmtEur(r.flat))}<td class="n">${fmtEur(r.c.n2)}</td><td class="n">${bb ? fmtEur(bb.c.n2) : '—'}</td><td class="n ${cls(dd.rel)}">${fmtPct(dd.rel, 1, true)}</td></tr>`; }).join('') || `<tr><td colspan="10" class="empty">Keine Daten für die aktuelle Auswahl</td></tr>`}
-      </tbody><tfoot><tr><td colspan="${ai ? 7 : 3}">Summe ${esc(monthRangeLabel())}</td><td class="n">${fmtEur(a.n2)}</td><td class="n">${fmtEur(b.n2)}</td><td class="n ${cls(dev(a.n2, b.n2).rel)}">${fmtPct(dev(a.n2, b.n2).rel, 1, true)}</td></tr></tfoot></table></div></div>
-    ${issues.length ? `<div class="card mt"><h3>Hinweise zu diesem Template</h3><div class="sub">Klick zeigt Befund, Regel und Empfehlung</div><div class="list mt">${issueList(issues)}</div></div>` : ''}
-    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap"><button class="btn" id="mFc">In Forecast-Tabelle anzeigen</button><button class="btn" id="mPub">Publisher-Details</button><button class="btn primary" id="mClose2">Schließen</button></div>`;
-  $('#modalBg').classList.add('on');
-  $('#mClose').onclick = closeModal; $('#mClose2').onclick = closeModal; $('#mPub').onclick = () => openPublisher(pub);
-  $$('#modal [data-issue]').forEach(x => x.onclick = () => openIssue(issues.find(i => i.id === x.dataset.issue)));
-  $('#mFc').onclick = () => { closeModal(); S.page = 'forecast'; S.fcGran = 'pfm'; S.fcFormat = fmt; renderAll(); const d2 = $('#fcTable') && $('#fcTable').closest('details'); if (d2) { d2.open = true; setTimeout(() => d2.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50); } };
+  $$('#tplNav [data-key]').forEach(b => b.onclick = () => { const s2 = new Set(sel); s2.has(b.dataset.key) ? s2.delete(b.dataset.key) : s2.add(b.dataset.key); setTplFilter(s2); });
+  if ($('#tplClear')) $('#tplClear').onclick = () => setTplFilter(new Set());
 }
 function renderAll() {
   try { renderHeader(); } catch (e) { console.error(e); }
