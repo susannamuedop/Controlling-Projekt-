@@ -14,6 +14,10 @@ Klickbarer Prototyp eines KI-gestützten Umsatz-Forecast-Dashboards für ein Con
 
 `forecast_dashboard.html` im Browser öffnen. Für den Import von `.xlsx`/`.xls` wird eine Internetverbindung benötigt (SheetJS wird von cdnjs geladen); CSV-Import funktioniert offline.
 
+## Design
+
+Dashboard und Dokumentation folgen dem RTL-Corporate-Design: Pink (`#E6007E`) als Akzentfarbe, neutrales Anthrazit für Navigation und Text, Schrift Inter (Ersatz für die nicht frei verfügbare Hausschrift). Die Farben sind zentral als CSS-Variablen (`--pink`, `--navy`, `--blue` …) und in den Chart-Paletten (`C`, `PUB_COLORS`, `GES_COLORS`, `IMPORT_PALETTE`) hinterlegt. Rot/Grün bleiben für Ampel und Abweichungen erhalten.
+
 ## Funktionen
 
 - **Übersicht, Forecast-Analyse, Szenarien, Datenqualität, Excel-Import & SAP, Methodik**
