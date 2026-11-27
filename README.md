@@ -16,7 +16,7 @@ Klickbarer Prototyp eines KI-gestützten Umsatz-Forecast-Dashboards für ein Con
 
 ## Design
 
-Das Dashboard folgt der Ad-Alliance-CI aus der Präsentationsvorlage (Theme „RTL United White“):
+Dashboard und Dokumentation (HTML/PDF) folgen der Ad-Alliance-CI aus der Präsentationsvorlage (Theme „RTL United White“):
 
 - **Basis Schwarz/Weiß:** schwarze Navigation, schwarze Primär-Buttons und aktive Zustände, weiße Flächen.
 - **Logo:** Ad-Alliance-Logo im Kopf, „Part of RTL“ im Navigationsfuß, Logo-Verlauf (`#E30164 → #784898 → #00B6ED`) als Linie über dem Kopf.
@@ -30,10 +30,11 @@ Die Farben liegen zentral als CSS-Variablen (`--pink` = Primäraktion, `--blue` 
 
 - **Übersicht, Forecast-Analyse, Szenarien, Datenqualität, Excel-Import & SAP, Methodik**
 - Filter nach Version (Budget, FC I–IV), Monat, Publisher, Gesellschaft und Wertebene (Netto 2 / Netto 4)
+- Template-Auswahl (Publisher × Werbeform) in der Navigation, auf dem Handy als Panel von unten
 - KI-Forecast-Vorschlag für offene Monate, Markierung bei Abweichungen über 5 %
 - Excel-Import mit automatischer Spaltenerkennung und 8-stufiger Prüfung
 - GuV-Überleitung Netto 2 → Netto 4 und SAP-Upload-Datei (simuliert)
 - Freigabe-Workflow Brand → Controlling → Geschäftsführung
-- Simulierter, regelbasierter Controlling-Chat mit drei Rollen
+- Simulierter, regelbasierter Controlling-Chat mit drei Rollen, als schwebendes Fenster über den Button unten rechts
 
 > **Hinweis:** KI-Prototyp. Ergebnisse können Fehler enthalten und müssen vor Freigabe durch Controlling und Geschäftsführung geprüft werden. Keine produktive Systemanbindung.

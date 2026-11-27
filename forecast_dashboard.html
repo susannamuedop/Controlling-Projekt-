@@ -25,7 +25,7 @@ html,body{margin:0;height:100%}
 body{font-family:var(--font);font-size:13px;color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased}
 button,input,select{font-family:inherit;font-size:inherit;color:inherit}
 .num,td.n,.kpi-value{font-variant-numeric:tabular-nums}
-.app{display:grid;grid-template-columns:212px minmax(0,1fr) 372px;grid-template-rows:auto auto 1fr;height:100vh}
+.app{display:grid;grid-template-columns:212px minmax(0,1fr);grid-template-rows:auto auto 1fr;height:100vh}
 /* Header */
 .topbar{grid-column:1/-1;display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:var(--surface);border-bottom:1px solid var(--line);padding:12px 18px;position:relative}
 .topbar::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:var(--brand-grad)}
@@ -84,6 +84,41 @@ select.sel:focus,.ms-btn:focus{outline:2px solid var(--blue-2);outline-offset:1p
 .rtl-mark{height:13px;width:auto;display:block}
 .process{padding:4px 10px 0;font-size:11.5px;color:#a6a6a6;line-height:1.55}
 .process ol{margin:4px 0 0;padding-left:16px}
+/* Templates je Publisher in der Navigation */
+.tpl-title{display:flex;align-items:center;justify-content:space-between}
+.nav .tpl-toggle,.tpl-backdrop,.tpl-sheet-head{display:none}
+.nav .tpl-toggle .n{margin-left:2px;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#fff;color:#000;font-size:10.5px;font-weight:700;display:inline-grid;place-items:center}
+.nav .tpl-toggle .n:empty{display:none}
+.tpl-title span{font-weight:600;color:#a6a6a6;letter-spacing:0}
+.tpl-nav{display:flex;flex-direction:column;gap:1px}
+.tpl-pub{display:flex;align-items:center;border-radius:var(--radius)}
+.tpl-pub:hover{background:var(--navy-2)}
+.nav .tpl-chev,.nav .tpl-pubsel,.nav .tpl-item{display:flex;align-items:center;gap:8px;border:0;background:transparent;color:#d9d9d9;cursor:pointer;text-align:left;border-radius:var(--radius)}
+.nav .tpl-chev{width:24px;flex:none;padding:6px 0 6px 8px}
+.nav .tpl-pubsel{flex:1;min-width:0;padding:6px 10px 6px 2px;font-size:12.5px;font-weight:500}
+.nav .tpl-chev:hover,.nav .tpl-pubsel:hover{background:transparent;color:#fff}
+.tpl-pub .chev{width:10px;font-size:10px;color:#8c8c8c;transition:transform .15s}
+.tpl-pub.open .chev{transform:rotate(90deg)}
+.tpl-pub .cnt{margin-left:auto;font-size:10.5px;color:#8c8c8c;font-variant-numeric:tabular-nums;white-space:nowrap}
+.nav .tpl-pub.on .tpl-pubsel{color:#fff;font-weight:600}
+.cb{width:14px;height:14px;flex:none;border:1.5px solid #6b6b6b;border-radius:4px;display:inline-grid;place-items:center;font-size:10px;font-weight:700;line-height:1;color:#fff}
+.cb.all,.cb.part{background:#fff;border-color:#fff;color:#000}
+.tpl-selbar{white-space:nowrap;display:flex;align-items:center;justify-content:space-between;gap:6px;margin:0 4px 6px;padding:6px 8px;border-radius:var(--radius);background:rgba(255,255,255,.12);color:#fff;font-size:11.5px;font-weight:600}
+.nav .tpl-selbar button{display:inline;width:auto;padding:2px 6px;font-size:11px;color:#cfcfcf;border-radius:5px}
+.nav .tpl-selbar button:hover{background:rgba(255,255,255,.08);color:#fff}
+.tpl-hint{font-size:11px;color:#8c8c8c;padding:0 10px 6px}
+.pill-sel{cursor:pointer;background:var(--blue-soft);border-color:var(--blue-2);color:var(--blue);font-family:inherit}
+.pill-sel:hover{background:#e4d4fc}
+.tpl-items{display:none;flex-direction:column;gap:1px;margin:1px 0 5px 22px;border-left:1px solid #333;padding-left:6px}
+.tpl-pub.open+.tpl-items{display:flex}
+.nav .tpl-item{padding:5px 8px;font-size:12px;color:#bfbfbf}
+.nav .tpl-item{width:100%}
+.nav .tpl-item:hover{background:var(--navy-2);color:#fff}
+.nav .tpl-item.on{color:#fff;font-weight:600}
+.tpl-item .dot,.tpl-pub .dot{width:7px;height:7px}
+.nav .process button{display:inline;width:auto;padding:2px 6px;margin-left:-6px;border-radius:5px;font-size:11.5px;color:#a6a6a6}
+.nav .process button:hover{background:var(--navy-2);color:#fff}
+.nav .process button.on{color:#fff;font-weight:600}
 /* Main */
 .main{overflow:auto;padding:16px 18px 40px;min-width:0}
 .page{display:none}
@@ -183,7 +218,11 @@ table.tbl{width:100%;border-collapse:collapse;font-size:12px}
 .tcell{border-radius:var(--radius);padding:6px 8px;font-size:11.5px;font-weight:500;display:flex;align-items:center;gap:6px;border:1px solid var(--line)}
 .tcell.g{background:var(--green-soft);border-color:#c5e8d6}.tcell.y{background:var(--orange-soft);border-color:#f3d9ad}.tcell.r{background:var(--red-soft);border-color:#f2c4c4}
 /* chat */
-.chat{border-left:1px solid var(--line);background:var(--surface);display:flex;flex-direction:column;min-height:0;overflow:hidden}
+/* Chat als schwebendes Fenster, geöffnet über den Button unten rechts */
+.chat{position:fixed;z-index:90;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(84px + env(safe-area-inset-bottom,0px));width:min(420px,calc(100vw - 32px));height:min(680px,calc(100vh - 110px));
+  background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 18px 50px rgba(0,0,0,.22);display:none;flex-direction:column;min-height:0;overflow:hidden}
+body.chat-open .chat{display:flex;animation:chatIn .18s ease-out}
+@keyframes chatIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 .chat-head{padding:12px 14px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:9px}
 .chat-head .row{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .chat-head h2{font-size:15px;margin:0;font-weight:800;letter-spacing:-.01em;display:flex;align-items:center;gap:8px}
@@ -231,10 +270,9 @@ table.tbl{width:100%;border-collapse:collapse;font-size:12px}
 .kmap b{display:block;font-size:12px;margin-bottom:2px}
 .empty{padding:20px;text-align:center;color:var(--text-3)}
 /* responsive */
-@media (max-width:1400px){.app{grid-template-columns:196px minmax(0,1fr) 340px}.kpis{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media (max-width:1400px){.app{grid-template-columns:196px minmax(0,1fr)}}
 @media (max-width:1180px){
-  .app{grid-template-columns:180px minmax(0,1fr);grid-template-rows:auto auto 1fr auto;height:auto;min-height:100vh}
-  .chat{grid-column:1/-1;border-left:0;border-top:1px solid var(--line);height:640px}
+  .app{grid-template-columns:180px minmax(0,1fr);grid-template-rows:auto auto 1fr;height:auto;min-height:100vh}
   .main{overflow:visible}
   .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
   .g21,.g12,.g3{grid-template-columns:1fr}
@@ -242,10 +280,27 @@ table.tbl{width:100%;border-collapse:collapse;font-size:12px}
   .stepper{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media (max-width:760px){
-  .app{grid-template-columns:1fr}
+  .app{grid-template-columns:minmax(0,1fr)}
+  .topbar>*,.disclaimer>*{min-width:0;max-width:100%}
   .nav{flex-direction:row;overflow-x:auto;padding:8px;gap:4px}
   .nav button{width:auto;white-space:nowrap}
   .nav-title,.nav-sep,.nav-foot,.process{display:none}
+  /* Templates auf dem Handy: Button in der Leiste öffnet ein Auswahl-Panel von unten */
+  .nav .tpl-toggle{display:flex;order:-1;background:var(--navy-2);color:#fff;font-weight:600}
+  .tpl-sheet{display:none}
+  body.tpl-open{overflow:hidden}
+  body.tpl-open .tpl-backdrop{display:block;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:92}
+  body.tpl-open .tpl-sheet{display:flex;flex-direction:column;position:fixed;left:0;right:0;bottom:0;max-height:78vh;z-index:93;background:var(--navy);border-radius:16px 16px 0 0;padding:0 10px calc(12px + env(safe-area-inset-bottom,0px));box-shadow:0 -10px 40px rgba(0,0,0,.35);animation:sheetIn .2s ease-out}
+  @keyframes sheetIn{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+  body.tpl-open .chat-fab{display:none}
+  .tpl-sheet-head{display:flex;align-items:center;justify-content:space-between;padding:14px 6px 8px;color:#fff;font-size:15px;position:sticky;top:0}
+  .nav .tpl-sheet-head button{width:auto;padding:7px 14px;border-radius:999px;background:#fff;color:#000;font-weight:600;font-size:13px}
+  .tpl-sheet .tpl-title{display:flex}
+  .tpl-sheet .tpl-nav{overflow:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
+  .nav .tpl-pubsel,.nav .tpl-item{padding-top:11px;padding-bottom:11px;font-size:14.5px;white-space:normal}
+  .nav .tpl-chev{width:36px;padding:11px 0 11px 10px}
+  .tpl-sheet .cb{width:18px;height:18px;font-size:12px}
+  .tpl-items{margin-left:30px}
   .g2{grid-template-columns:1fr}
   .kmap{grid-template-columns:1fr 1fr}
   .tmatrix{grid-template-columns:90px repeat(4,minmax(0,1fr))}
@@ -297,10 +352,52 @@ details.card>summary{color:var(--text);font-size:13.5px}
 .msg-actions button{border:1px solid var(--pink);background:#fff;color:var(--pink);border-radius:6px;padding:4px 9px;font-size:11.5px;cursor:pointer;font-weight:600}
 .msg-actions button:hover{background:var(--pink);color:#fff}
 .msg-actions button:disabled{opacity:.45;cursor:default;background:#fff;color:var(--pink)}
-.chat-fab{display:none;position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:70;border:0;background:var(--pink);color:#fff;border-radius:999px;padding:11px 16px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.3);cursor:pointer}
+.chat-fab{display:inline-flex;align-items:center;gap:8px;position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:95;border:0;background:var(--pink);color:#fff;border-radius:999px;padding:0 18px 0 14px;height:52px;font-weight:600;font-size:13.5px;box-shadow:0 8px 24px rgba(0,0,0,.3);cursor:pointer;transition:transform .15s,background .15s}
+.chat-fab:hover{background:var(--pink-2);transform:translateY(-1px)}
+.chat-fab .fab-ic{font-size:20px;line-height:1}
+body.chat-open .chat-fab{background:var(--navy-3);box-shadow:0 8px 24px rgba(0,0,0,.3)}
 @media (max-width:1400px){.kpis.k6{grid-template-columns:repeat(3,minmax(0,1fr))}.flow{grid-template-columns:repeat(4,minmax(0,1fr))}}
-.chat-close{display:none}
-@media (max-width:1180px){.chat-fab{display:block}.chat-close{display:inline-flex}body.chat-closed .chat{display:none}}
+.chat-close{display:inline-flex}
+/* Hinweise: per Klick/Tippen oder Mouseover sichtbar */
+.hint-btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line-2);background:#fff;border-radius:999px;padding:2px 9px;font-size:11.5px;font-weight:600;cursor:pointer;color:var(--text);white-space:nowrap}
+.hint-btn:hover,.hint-btn:focus-visible{border-color:var(--pink);color:var(--pink);outline:none}
+.hint-btn .i{font-style:normal;color:var(--blue)}
+.pill[data-tip]{cursor:help}
+[data-tip]{-webkit-tap-highlight-color:transparent}
+.tip{max-width:min(320px,calc(100vw - 16px))}
+/* ===== Endgeräte ===== */
+/* Große Bildschirme (ab 1700 px): mehr Platz, größere Schrift */
+@media (min-width:1700px){
+  body{font-size:14px}
+  .app{grid-template-columns:236px minmax(0,1fr)}
+  .main{padding:22px 28px 48px}
+  .kpi .kpi-value{font-size:26px}
+  .grid{gap:16px}.mt{margin-top:16px}
+  .tbl-wrap{max-height:680px}
+}
+/* Handy (bis 760 px): Chat als Vollbild, Filter untereinander, Button nur mit Symbol */
+@media (max-width:760px){
+  .chat{inset:0;width:auto;height:auto;border-radius:0;border:0;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+  body.chat-open .chat-fab{display:none}
+  body.chat-open{overflow:hidden}
+  .chat-fab{padding:0;width:56px;height:56px;justify-content:center}
+  .chat-fab .fab-l{display:none}
+  .filters{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
+  .filters .ctl:last-child{grid-column:1/-1}
+  select.sel,.ms-btn,#fVersion{width:100%;max-width:none;min-width:0}
+  .filters .seg{width:100%}.filters .seg button{flex:1}
+  .filters .btn{width:100%;justify-content:center}
+  .status-pills{flex-wrap:nowrap;overflow-x:auto;width:100%;padding-bottom:2px}
+  .page-head{flex-direction:column;align-items:flex-start}
+  .card{padding:12px}
+  .kpi .kpi-value{font-size:19px;white-space:normal}
+  .modal-bg{padding:0}
+  .modal{max-height:100vh;height:100%;border-radius:0;padding:14px 14px calc(14px + env(safe-area-inset-bottom,0px))}
+  .ms-pop{position:fixed;left:12px;right:12px;top:auto;min-width:0}
+  .tbl td,.tbl th{padding:6px 7px}
+  .sc-ctrl .slider-box input[type=range]{height:28px}
+}
+@media (max-width:420px){.kpis,.kpis.k6{grid-template-columns:1fr 1fr}.kpi .kpi-value{font-size:17px}.brand h1{font-size:14px}}
 @media (max-width:760px){.kpis.k6{grid-template-columns:repeat(2,minmax(0,1fr))}.flow{grid-template-columns:repeat(2,minmax(0,1fr))}.tabs button{padding:8px 9px}}
 </style>
 <div class="app">
@@ -336,15 +433,23 @@ details.card>summary{color:var(--text);font-size:13.5px}
     <button data-page="sap"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 15V4M7 9l5-5 5 5"/><path d="M4 15v4a1 1 0 001 1h14a1 1 0 001-1v-4"/></svg>Excel-Import &amp; SAP</button>
     <div class="nav-sep"></div>
     <button data-page="method"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg>Methodik &amp; Annahmen</button>
+    <div class="nav-sep"></div>
+    <button type="button" class="tpl-toggle" id="tplToggle" aria-expanded="false" aria-controls="tplSheet"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Templates<span class="n" id="tplToggleN"></span></button>
+    <div class="tpl-backdrop" id="tplBackdrop"></div>
+    <div class="tpl-sheet" id="tplSheet" role="dialog" aria-label="Templates auswählen">
+      <div class="tpl-sheet-head"><b>Templates auswählen</b><button type="button" id="tplDone">Fertig</button></div>
+      <div class="nav-title tpl-title">Templates <span id="tplNavCount"></span></div>
+      <div class="tpl-nav" id="tplNav" aria-label="Templates je Publisher und Werbeform"></div>
+    </div>
     <div class="process">
       <div class="nav-title" style="padding-left:0">Prozess</div>
       <ol>
-        <li>Templates (Brandmanager)</li>
-        <li>Konsolidierung</li>
-        <li>Netto 2 → Netto 4</li>
-        <li>SAP-Upload-Datei</li>
-        <li>GuV-Umsatzerlöse</li>
-        <li>Soll-/Forecast-Vergleich</li>
+        <li><button type="button" data-step="quality">Templates (Brandmanager)</button></li>
+        <li><button type="button" data-step="sap:upload">Konsolidierung</button></li>
+        <li><button type="button" data-step="sap:guv">Netto 2 → Netto 4</button></li>
+        <li><button type="button" data-step="sap:upload">SAP-Upload-Datei</button></li>
+        <li><button type="button" data-step="sap:guv">GuV-Umsatzerlöse</button></li>
+        <li><button type="button" data-step="forecast">Soll-/Forecast-Vergleich</button></li>
       </ol>
     </div>
     <div class="nav-foot">Klickbarer Prototyp für ein Controlling-Projekt.<br>Keine produktive Systemanbindung.<div class="part-of"><svg class="rtl-mark" role="img" aria-label="RTL" viewBox="0 0 826.691 80.852" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g><rect x="684.952" y="0.005" width="141.739" height="79.706" fill="#00B6ED"/><path d="M729 18.326 738.843 18.326 738.843 52.899 782.644 52.899 782.644 61.389 729 61.389 729 18.326Z" fill="#FFFFFF"/></g><g><rect x="529.056" y="0.006" width="141.739" height="79.706" fill="#5E2676"/><path d="M595.004 26.817 570.089 26.817 570.089 18.327 629.762 18.327 629.762 26.817 604.847 26.817 604.847 61.39 595.004 61.39 595.004 26.817Z" fill="#FFFFFF"/></g><g><rect x="373.159" y="0.005" width="141.739" height="79.706" fill="#D70365"/><path d="M413.423 18.326 451.196 18.326C462.7 18.326 469.098 23.494 469.098 32.168 469.098 39.612 464.299 44.595 456.117 45.764L474.634 61.39 460.423 61.39 443.013 46.318 423.265 46.318 423.265 61.39 413.422 61.39 413.422 18.326ZM449.904 38.258C455.994 38.258 458.947 36.289 458.947 32.291 458.947 28.293 455.994 26.385 449.904 26.385L423.266 26.385 423.266 38.258 449.904 38.258Z" fill="#FFFFFF"/></g><g><path d="M0 79.713 0 0 28.469 0C45.095 0 55.799 9.907 55.799 25.167 55.799 40.654 44.981 50.789 28.468 50.789L10.021 50.789 10.021 79.714 0 79.714ZM10.021 41.679 28.241 41.679C39.401 41.679 45.55 35.758 45.55 25.167 45.55 15.032 39.173 9.11 28.241 9.11L10.021 9.11 10.021 41.679Z" fill="#FFFFFF"/><path d="M63.769 50.561C63.769 32.227 73.334 20.498 88.138 20.498 96.337 20.498 102.942 23.686 107.156 29.608L107.612 29.608 108.864 21.636 117.177 21.636 117.177 79.713 108.864 79.713 107.612 71.628 107.156 71.628C103.284 77.436 96.679 80.852 89.05 80.852 73.563 80.852 63.77 69.123 63.77 50.561ZM107.839 50.561C107.839 37.237 101.235 29.039 90.074 29.039 79.711 29.039 73.448 37.01 73.448 50.561 73.448 64.34 79.711 72.311 90.074 72.311 101.234 72.311 107.839 63.998 107.839 50.561Z" fill="#FFFFFF"/><path d="M133.116 79.713 133.116 21.636 141.429 21.636 142.226 31.316 142.682 31.316C145.073 24.825 150.881 20.498 158.055 20.498L163.293 20.498 163.293 29.608 158.738 29.608C147.692 29.608 142.681 37.807 142.681 51.472L142.681 79.713 133.115 79.713Z" fill="#FFFFFF"/><path d="M195.745 79.713C184.357 79.713 178.777 73.564 178.777 62.631L178.777 29.608 168.414 29.608 168.414 21.636 178.777 21.636 178.777 5.694 188.343 5.694 188.343 21.636 203.033 21.636 203.033 29.608 188.343 29.608 188.343 62.86C188.343 68.554 191.645 71.742 197.339 71.742L203.033 71.742 203.033 79.713 195.745 79.713Z" fill="#FFFFFF"/><path d="M235.484 50.675C235.484 33.024 246.871 20.498 262.928 20.498 278.985 20.498 290.372 33.024 290.372 50.675 290.372 68.326 278.984 80.852 262.928 80.852 246.872 80.852 235.484 68.326 235.484 50.675ZM280.692 50.675C280.692 37.352 273.859 29.039 262.927 29.039 251.995 29.039 245.162 37.352 245.162 50.675 245.162 63.998 251.995 72.312 262.927 72.312 273.859 72.312 280.692 63.999 280.692 50.675Z" fill="#FFFFFF"/><path d="M306.427 79.713 306.427 29.608 296.064 29.608 296.064 21.636 306.427 21.636 306.427 17.081C306.427 7.06 312.918 0 323.395 0L330.683 0 330.683 7.971 324.989 7.971C319.295 7.971 315.993 11.159 315.993 16.853L315.993 21.636 330.683 21.636 330.683 29.608 315.993 29.608 315.993 79.713 306.427 79.713Z" fill="#FFFFFF"/></g></svg></div></div>
@@ -365,7 +470,7 @@ details.card>summary{color:var(--text);font-size:13.5px}
     <div class="chat-head">
       <div class="row">
         <h2>Controlling AI Assistant <span class="ai-badge">SIMULIERT</span></h2>
-        <span><button class="btn ghost" id="chatReset" title="Chat zurücksetzen">↺ Neu</button><button class="btn ghost chat-close" id="chatClose" title="Chat einklappen">✕</button></span>
+        <span><button class="btn ghost" id="chatReset" title="Chat zurücksetzen">↺ Neu</button><button class="btn ghost chat-close" id="chatClose" aria-label="Chat schließen">✕</button></span>
       </div>
       <div class="role-seg" id="roleSeg">
         <button data-role="brand" class="on">Brand / Fachabt.</button>
@@ -383,7 +488,7 @@ details.card>summary{color:var(--text);font-size:13.5px}
   </aside>
 </div>
 
-<button class="chat-fab" id="chatFab" type="button">💬 Controlling AI Assistant</button>
+<button class="chat-fab" id="chatFab" type="button" aria-label="Controlling AI Assistant öffnen" aria-expanded="false"><span class="fab-ic">💬</span><span class="fab-l">AI Assistant</span></button>
 <div class="modal-bg" id="modalBg"><div class="modal" id="modal"></div></div>
 <div class="tip" id="tip"></div>
 <div class="toast" id="toast"></div>
@@ -626,6 +731,7 @@ const S = {
   version: 'FC4',
   months: new Set([...Array(12).keys()]),
   pubs: new Set(DATA.publishers.map(p => p.id)),
+  tplFilter: new Set(), // Auswahl einzelner Templates (Publisher-Werbeform); leer = alle
   ges: new Set([...DATA.gesellschaften.map(g => g.id), NA_GES]),
   level: 'N2',
   page: 'overview',
@@ -638,8 +744,9 @@ const S = {
 /* ---------- Filterfunktionen ---------- */
 function rowsFor(versionId, opt = {}) {
   const months = opt.months || S.months, pubs = opt.pubs || S.pubs, ges = opt.ges || S.ges;
+  const tpl = opt.tpl || S.tplFilter;
   return ROWS.filter(r => r.v === versionId && months.has(r.m) && pubs.has(r.pub) && ges.has(r.ges || NA_GES)
-    && (!opt.fmt || r.fmt === opt.fmt));
+    && (!opt.fmt || r.fmt === opt.fmt) && (!tpl || !tpl.size || tpl.has(r.pub + '-' + r.fmt)));
 }
 // Vergleichsversionen: bei Excel-Import (und daraus abgeleiteten Varianten) Budget/Vorjahr aus der Datei
 const isImportVersion = (v = S.version) => VER[v] && (VER[v].kind === 'import' || (VER[v].base && VER[VER[v].base] && VER[VER[v].base].kind === 'import'));
@@ -756,6 +863,7 @@ function kiSuggestionRows(versionId = S.version, opt = {}) {
   if (!V || V.kind !== 'fc' || !V.istMonths || V.istMonths >= 12 || isImportVersion(versionId)) return [];
   const cut = V.istMonths, months = opt.months || S.months, pubs = opt.pubs || S.pubs, ges = opt.ges || S.ges, out = [];
   DATA.publishers.filter(p => pubs.has(p.id)).forEach(p => DATA.formats.forEach(f => {
+    if (S.tplFilter.size && !S.tplFilter.has(p.id + '-' + f.id)) return;
     const tr = ytdTrend(versionId, p.id, f.id, cut);
     for (let m = cut; m < 12; m++) {
       if (!months.has(m)) continue;
@@ -808,12 +916,13 @@ function templateList(versionId = S.version) {
   if (isImportVersion(versionId)) {
     // Import: „Template“ = in der Datei enthaltene Kombination Publisher × Werbeform
     const keys = new Set(ROWS.filter(r => r.v === 'IMP').map(r => r.pub + '-' + r.fmt));
-    return [...keys].filter(k => S.pubs.has(k.split('-')[0])).map(k => { const [p, f] = k.split('-');
+    return [...keys].filter(k => S.pubs.has(k.split('-')[0]) && (!S.tplFilter.size || S.tplFilter.has(k))).map(k => { const [p, f] = k.split('-');
       return { key: k, p: PUB[p], f: FMT[f], status: 'eingegangen', updated: VER.IMP.stand }; });
   }
   const map = DATA.templates[baseId] || {}, out = [];
   DATA.publishers.filter(p => S.pubs.has(p.id) && !p.imported).forEach(p => DATA.formats.filter(f => !f.imported).forEach(f => {
     const key = p.id + '-' + f.id, t = map[key] || { status: 'eingegangen' };
+    if (S.tplFilter.size && !S.tplFilter.has(key)) return;
     out.push({ key, p, f, status: t.status, fallback: t.fallback,
       updated: t.status === 'ausstehend' ? null : (baseId === 'FC4' ? DATA.templateUpdated[p.id] : VER[baseId] ? VER[baseId].stand : '—') });
   }));
@@ -921,7 +1030,8 @@ function monthRangeLabel(set = S.months) {
 function pubLabel(set = S.pubs) { return set.size === DATA.publishers.length ? 'alle Publisher' : [...set].map(id => PUB[id].name).join(', '); }
 function gesLabel(set = S.ges) { const real = [...set].filter(g => g !== NA_GES); return real.length === DATA.gesellschaften.length ? 'alle Gesellschaften' : real.map(id => GES[id].name).join(', ') || 'keine Gesellschaft'; }
 function levelLabel(l = S.level) { return l === 'N4' ? 'Netto 4' : 'Netto 2'; }
-function contextLabel() { return `${VER[S.version].label} · ${monthRangeLabel()} · ${pubLabel()} · ${gesLabel()} · ${levelLabel()}`; }
+function tplLabel(set = S.tplFilter) { if (!set.size) return ''; const l = [...set].map(k => { const [p, f] = k.split('-'); return `${PUB[p] ? PUB[p].name : p} ${FMT[f] ? FMT[f].name : f}`; }); return 'Templates: ' + (l.length > 3 ? l.slice(0, 3).join(', ') + ` +${l.length - 3}` : l.join(', ')); }
+function contextLabel() { return `${VER[S.version].label} · ${monthRangeLabel()} · ${pubLabel()} · ${gesLabel()}${S.tplFilter.size ? ' · ' + tplLabel() : ''} · ${levelLabel()}`; }
 function versionSourceLabel(v = S.version) {
   const V = VER[v]; if (V.kind === 'budget') return 'Budgetplanung 2026';
   if (V.kind === 'import') return `Excel-Import „${V.file}“, Blatt „${V.sheet}“ (${V.records} Datensätze übernommen)`;
@@ -1403,18 +1513,31 @@ function waterfallChart(el, o) {
   el.innerHTML = `<div class="chart">${s}<line class="axis" x1="${m.l}" x2="${W - m.r}" y1="${yBase}" y2="${yBase}"/>${broken ? `<path d="M${m.l - 6} ${yBase - 3} l6 -4 M${m.l - 6} ${yBase + 3} l6 -4" stroke="#808080"/>` : ''}</svg></div><div class="legend"><span>Werte in Mio. €</span><span><i style="background:${C.navy}"></i>Summe</span><span><i style="background:${C.red}"></i>Abzug</span>${broken ? '<span class="muted">Achse beginnt nicht bei 0</span>' : ''}</div>`;
 }
 
-/* Tooltip */
+/* Tooltip / Hinweise: Maus = drüberfahren, Handy/Tablet = antippen (erneut tippen oder woanders tippen schließt) */
 (function () {
   const tip = document.getElementById('tip');
+  const canHover = () => window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  let pinned = null;
+  const place = (x, y) => { const w = tip.offsetWidth, h = tip.offsetHeight; let l = x + 14, t = y + 14;
+    if (l + w > innerWidth - 8) l = Math.max(8, x - w - 14); if (t + h > innerHeight - 8) t = Math.max(8, y - h - 14);
+    tip.style.left = l + 'px'; tip.style.top = t + 'px'; };
+  const show = (html, x, y) => { tip.innerHTML = html; tip.style.display = 'block'; place(x, y); };
+  const hide = () => { tip.style.display = 'none'; pinned = null; };
   document.addEventListener('mousemove', e => {
+    if (pinned || !canHover()) return;
     const t = e.target && e.target.closest ? e.target.closest('[data-tip]') : null;
     if (!t) { tip.style.display = 'none'; return; }
-    tip.innerHTML = t.getAttribute('data-tip'); tip.style.display = 'block';
-    const w = tip.offsetWidth, h = tip.offsetHeight;
-    let x = e.clientX + 14, y = e.clientY + 14;
-    if (x + w > innerWidth - 8) x = e.clientX - w - 14; if (y + h > innerHeight - 8) y = e.clientY - h - 14;
-    tip.style.left = x + 'px'; tip.style.top = y + 'px';
+    show(t.getAttribute('data-tip'), e.clientX, e.clientY);
   });
+  document.addEventListener('click', e => {
+    if (canHover()) { tip.style.display = 'none'; return; }
+    const t = e.target && e.target.closest ? e.target.closest('[data-tip],[title]:not(button):not(select):not(input):not(option)') : null;
+    if (!t || t.closest('.tip-hover-only')) { if (pinned) hide(); return; }
+    if (pinned === t) { hide(); return; }
+    const html = t.getAttribute('data-tip') || esc(t.getAttribute('title') || ''); if (!html) return;
+    const r = t.getBoundingClientRect(); show(html, Math.min(r.left + 20, innerWidth - 20), r.bottom - 4); pinned = t;
+  }, true);
+  window.addEventListener('scroll', () => { if (pinned) hide(); }, true);
 })();
 </script>
 <script>
@@ -1465,7 +1588,7 @@ function initHeader() {
   $('#btnReset').onclick = resetFilters;
 }
 function resetFilters() {
-  S.months = new Set([...Array(12).keys()]); S.level = 'N2';
+  S.months = new Set([...Array(12).keys()]); S.level = 'N2'; S.tplFilter = new Set();
   if (!isImportVersion()) S.version = 'FC4';
   rebuildFilters(); MS.month.render(); renderAll(); toast('Alle Filter zurückgesetzt');
 }
@@ -1480,10 +1603,12 @@ function renderHeader() {
     : `<b>GJ 2026</b> · Ist Jan–${MONTHS[V.istMonths - 1]} · Forecast ${MONTHS[V.istMonths]}–Dez · Stand ${V.stand}${V.base ? ' · Variante' : ''}`;
   $$('#fLevel button').forEach(b => b.classList.toggle('on', b.dataset.v === S.level));
   const q = runQualityChecks(), k = kpis(), a = ampelOf(k.dBud.rel), crit = q.issues.filter(i => i.sev === 'r').length;
-  $('#statusPills').innerHTML = `${isImportVersion() ? `<span class="pill"><span class="dot b"></span>Import: ${VER.IMP ? VER.IMP.records : 0} Datensätze</span>` : `<span class="pill"><span class="dot ${q.pending ? 'y' : 'g'}"></span>Templates ${q.received}/${q.total}</span>`}
-    <span class="pill"><span class="dot ${crit ? 'r' : 'g'}"></span>${crit} kritische Prüfpunkte</span>
+  $('#statusPills').innerHTML = `${isImportVersion() ? `<span class="pill"><span class="dot b"></span>Import: ${VER.IMP ? VER.IMP.records : 0} Datensätze</span>` : `<span class="pill"${tipAttr(`<b>Template-Eingang</b><br>${q.received} von ${q.total} eingegangen${q.pending ? '<br>Ausstehend: ' + q.tpl.filter(t => t.status === 'ausstehend').map(t => esc(t.p.name + ' ' + t.f.name)).join(', ') : ''}`)}><span class="dot ${q.pending ? 'y' : 'g'}"></span>Templates ${q.received}/${q.total}</span>`}
+    <span class="pill"${tipAttr(`<b>Kritische Prüfpunkte</b><br>${q.issues.filter(i => i.sev === 'r').slice(0, 6).map(i => '• ' + esc(i.title)).join('<br>') || 'keine'}`)}><span class="dot ${crit ? 'r' : 'g'}"></span>${crit} kritische Prüfpunkte</span>
     <span class="pill"><span class="dot ${S.version === 'BUD' ? 'n' : a}"></span>${S.version === 'BUD' ? 'Budget = Referenz' : 'ggü. Budget ' + fmtPct(k.dBud.rel, 1, true)}</span>
+    ${S.tplFilter.size ? `<button type="button" class="pill pill-sel" id="pillTplSel"${tipAttr(`<b>Template-Auswahl aktiv</b><br>${esc(tplLabel())}<br><i>Klick: Auswahl aufheben</i>`)}>☑ ${S.tplFilter.size} Template${S.tplFilter.size > 1 ? 's' : ''} ausgewählt <b>✕</b></button>` : ''}
     <span class="pill" title="Freigabe durch Brand, Controlling und Geschäftsführung"><span class="dot ${approvalDone() ? 'g' : approvalCount() ? 'y' : 'n'}"></span>Freigabe ${approvalCount()}/${APPROVAL_STEPS.length}</span>`;
+  if ($('#pillTplSel')) $('#pillTplSel').onclick = () => setTplFilter(new Set());
   $('#dqBadge').textContent = crit || ''; $('#dqBadge').style.display = crit ? '' : 'none';
 }
 function pageHead(title, desc) {
@@ -1542,9 +1667,10 @@ function renderOverview() {
   $('#ovAmpel').innerHTML = `<div class="tbl-wrap" style="max-height:none"><table class="tbl"><thead><tr><th>Publisher</th><th class="n">${fcName}</th><th class="n">Abw. Budget</th><th>Budget-Ampel</th><th class="n">ggü. VJ</th><th>Datenqualität</th></tr></thead><tbody>
     ${pt.map(x => { const s = qs.find(y => y.p.id === x.p.id) || { sev: 'g', issues: [] }, a = ampelOf(x.dBud.rel); return `<tr><td><button class="link" data-pub="${x.p.id}">${x.p.name}</button><div class="muted" style="font-size:11px">${x.p.ges && GES[x.p.ges] ? GES[x.p.ges].name : '—'}</div></td>
       <td class="n">${fmtEur(lv(x.fc))}</td><td class="n ${cls(x.dBud.rel)}">${fmtPct(x.dBud.rel, 1, true)}</td><td><span class="ampel"><span class="dot ${S.version === 'BUD' ? 'n' : a}"></span>${S.version === 'BUD' ? '–' : ampelText[a]}</span></td>
-      <td class="n ${cls(x.dVj.rel)}">${fmtPct(x.dVj.rel, 1, true)}</td><td><span class="ampel"><span class="dot ${s.sev}"></span>${s.issues.length ? s.issues.length + ' Hinweis(e)' : 'ok'}</span></td></tr>`; }).join('')}
+      <td class="n ${cls(x.dVj.rel)}">${fmtPct(x.dVj.rel, 1, true)}</td><td>${s.issues.length ? `<button type="button" class="hint-btn tip-hover-only" data-hints="${x.p.id}"${tipAttr(hintsTip(s.issues))}><span class="dot ${s.sev}"></span>${s.issues.length} Hinweis(e) <i class="i">ⓘ</i></button>` : '<span class="ampel"><span class="dot g"></span>ok</span>'}</td></tr>`; }).join('')}
     </tbody></table></div>`;
   $$('#ovAmpel [data-pub]').forEach(b => b.onclick = () => openPublisher(b.dataset.pub));
+  $$('#ovAmpel [data-hints]').forEach(b => b.onclick = () => openHints(b.dataset.hints));
   const seg = segmentDeviations().filter(x => isNum(x.dBud.abs) && Math.abs(x.dBud.abs) > 1);
   const pos = seg.filter(x => x.dBud.abs > 0).sort((a, b) => b.dBud.abs - a.dBud.abs).slice(0, 3), neg = seg.filter(x => x.dBud.abs < 0).sort((a, b) => a.dBud.abs - b.dBud.abs).slice(0, 3);
   const row = x => `<div class="list-row issue" data-pub="${x.p.id}"><span class="l"><b>${x.p.name}</b> · ${x.f.name}<small>${fcName} ${fmtEur(lv(x.fc))} · Budget ${fmtEur(lv(x.bud))}</small></span><span class="num ${cls(x.dBud.abs)}" style="white-space:nowrap;text-align:right"><b>${fmtEur(x.dBud.abs, true)}</b> <small>(${fmtPct(x.dBud.rel, 1, true)})</small></span></div>`;
@@ -1856,7 +1982,7 @@ function renderQuality() {
     <div class="card mt"><div class="card-head"><div><h3>Datenqualität je Publisher</h3><div class="sub">Ampel: Grün = vollständig und plausibel · Gelb = kleinere Auffälligkeiten / Prüfbedarf · Rot = wesentliche Daten fehlen oder starke Abweichungen</div></div></div>
       <div class="tbl-wrap" style="max-height:none"><table class="tbl"><thead><tr><th>Publisher</th><th>Template-Status</th><th class="n">Fehlende Werte</th><th>Auffälligkeiten</th><th>Letzte Aktualisierung</th><th>Datenqualitätsstatus</th></tr></thead><tbody>
       ${q.pubStatus.map(s => `<tr><td><button class="link" data-pub="${s.p.id}">${s.p.name}</button></td><td>${s.tplReceived}/${s.tplTotal} eingegangen</td><td class="n">${s.missing}</td>
-        <td style="white-space:normal">${s.issues.length ? s.issues.map(i => `<button class="chip ${i.sev === 'r' ? 'neg' : 'warn'}" style="border:0;cursor:pointer;margin:1px" data-issue="${i.id}">${issueShort(i)}</button>`).join(' ') : '<span class="muted">keine</span>'}</td>
+        <td style="white-space:normal">${s.issues.length ? s.issues.map(i => `<button class="chip tip-hover-only ${i.sev === 'r' ? 'neg' : 'warn'}" style="border:0;cursor:pointer;margin:1px" data-issue="${i.id}"${tipAttr(`<b>${esc(i.title)}</b><br>${esc(i.detail)}<br><i>Klick: Details</i>`)}>${issueShort(i)}</button>`).join(' ') : '<span class="muted">keine</span>'}</td>
         <td>${s.updated || '—'}</td><td><span class="ampel"><span class="dot ${s.sev}"></span>${sevText[s.sev]}</span></td></tr>`).join('')}
       </tbody></table></div></div>
     <div class="grid g2 mt">
@@ -1871,7 +1997,20 @@ function renderQuality() {
 }
 function issueShort(i) { return { template: 'Template fehlt', review: 'in Prüfung', missing: 'fehlender Wert', implausible: 'unplausibel', mapping: 'Zuordnung', yoy: 'VJ > 10 %', tkp: 'TKP', util: 'Auslastung' }[i.type] + ' · ' + FMT[i.fmt].name; }
 function issueList(list) {
-  return list.length ? list.map(i => `<div class="list-row issue" data-issue="${i.id}"><span class="l"><b>${esc(i.title)}</b><small>${esc(i.rule)}</small></span><span class="num">${i.value ? esc(i.value) : ''} ›</span></div>`).join('') : '<div class="empty">Keine Einträge für die aktuelle Auswahl</div>';
+  return list.length ? list.map(i => `<div class="list-row issue tip-hover-only" data-issue="${i.id}"${tipAttr(`<b>${esc(i.title)}</b><br>${esc(i.detail)}`)}><span class="l"><b>${esc(i.title)}</b><small>${esc(i.rule)}</small></span><span class="num">${i.value ? esc(i.value) : ''} ›</span></div>`).join('') : '<div class="empty">Keine Einträge für die aktuelle Auswahl</div>';
+}
+function hintsTip(list) {
+  return `<b>${list.length} Hinweis(e)</b><br>${list.slice(0, 6).map(i => `<span class="dot ${i.sev}" style="width:7px;height:7px"></span> ${esc(i.title)}`).join('<br>')}${list.length > 6 ? `<br>… und ${list.length - 6} weitere` : ''}<br><i>Klick: alle Hinweise anzeigen</i>`;
+}
+function openHints(pubId) {
+  const list = runQualityChecks().issues.filter(i => i.pub === pubId);
+  $('#modal').innerHTML = `<div class="modal-head"><div><h3>Hinweise: ${esc(PUB[pubId].name)}</h3><div class="sub">${list.length} Hinweis(e) · ${esc(VER[S.version].label)} · Klick auf einen Hinweis zeigt Befund, Regel und Empfehlung</div></div><button class="btn" id="mClose">✕</button></div>
+    <div class="list">${issueList(list)}</div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap"><button class="btn" id="mPub">Publisher-Details</button><button class="btn primary" id="mQ">Zur Datenqualität</button></div>`;
+  $('#modalBg').classList.add('on');
+  $('#mClose').onclick = closeModal; $('#mPub').onclick = () => openPublisher(pubId);
+  $('#mQ').onclick = () => { closeModal(); S.page = 'quality'; renderAll(); $('#main').scrollTop = 0; };
+  $$('#modal [data-issue]').forEach(b => b.onclick = () => openIssue(list.find(i => i.id === b.dataset.issue)));
 }
 function openIssue(i) {
   if (!i) return;
@@ -2957,8 +3096,15 @@ function runChatAction(label, fn) {
     renderAnswer(typing, res);
   }, 300);
 }
+function setChatOpen(open) {
+  document.body.classList.toggle('chat-open', open);
+  const fab = $('#chatFab'); fab.setAttribute('aria-expanded', open); fab.setAttribute('aria-label', open ? 'Chat schließen' : 'Controlling AI Assistant öffnen');
+  fab.querySelector('.fab-ic').textContent = open ? '✕' : '💬'; fab.querySelector('.fab-l').textContent = open ? 'Schließen' : 'AI Assistant';
+  if (open && matchMedia('(hover: hover)').matches) setTimeout(() => $('#chatInput').focus(), 60);
+}
 function askChat(text, shown) {
   text = String(text || '').trim(); if (!text) return;
+  setChatOpen(true);
   if (text === '@open-scenario') { openScenarioFromChat(); return; }
   // Antwort auf eine Rückfrage des Assistenten (mehrstufiger Dialog)
   if (CHAT.pending) { const low = text.toLowerCase(), hit = CHAT.pending.find(p => p.re.test(low)); CHAT.pending = null; if (hit) { runChatAction(text, hit.run); return; } }
@@ -2995,8 +3141,9 @@ function welcome() {
 function initChat() {
   $('#chatForm').onsubmit = e => { e.preventDefault(); const i = $('#chatInput'); askChat(i.value); i.value = ''; };
   $('#chatReset').onclick = () => { CHAT.pending = null; welcome(); toast('Chat zurückgesetzt'); };
-  $('#chatClose').onclick = () => document.body.classList.add('chat-closed');
-  $('#chatFab').onclick = () => { document.body.classList.toggle('chat-closed'); if (!document.body.classList.contains('chat-closed')) document.querySelector('.chat').scrollIntoView({ behavior: 'smooth' }); };
+  $('#chatClose').onclick = () => setChatOpen(false);
+  $('#chatFab').onclick = () => setChatOpen(!document.body.classList.contains('chat-open'));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.body.classList.contains('chat-open') && !$('#modalBg').classList.contains('on')) setChatOpen(false); });
   $$('#roleSeg button').forEach(b => b.onclick = () => {
     S.role = b.dataset.role; $$('#roleSeg button').forEach(x => x.classList.toggle('on', x === b));
     addMsg('bot', `<div class="role-tag">Rollenwechsel</div><p>Ab jetzt antworte ich für <b>${ROLE[S.role]}</b>${{ brand: ' – verständlich und praxisnah.', controlling: ' – mit Berechnungswegen, Quellen und Auswirkungen.', gf: ' – kurz und entscheidungsorientiert.' }[S.role]}</p>`);
@@ -3010,13 +3157,63 @@ function initChat() {
    ===================================================================== */
 const PAGES = { overview: renderOverview, forecast: renderForecast, scenario: renderScenario, quality: renderQuality, sap: renderSap, method: renderMethod };
 function syncNav() { $$('#nav button[data-page]').forEach(b => b.classList.toggle('on', b.dataset.page === S.page)); $$('.page').forEach(p => p.classList.toggle('on', p.id === 'page-' + S.page)); }
+/* ---------- Navigation: Templates je Publisher × Werbeform als Mehrfachauswahl (filtert das Dashboard) ---------- */
+S.navOpen = new Set();
+function navQuality() { const sp = S.pubs, st = S.tplFilter; S.pubs = new Set(pubsInVersion()); S.tplFilter = new Set(); try { return runQualityChecks(); } finally { S.pubs = sp; S.tplFilter = st; } }
+function setTplFilter(set) {
+  S.tplFilter = set;
+  // Publisher-Filter folgt der Auswahl, damit Kopfzeile und Tabellen dazu passen
+  S.pubs = set.size ? new Set([...set].map(k => k.split('-')[0])) : new Set(pubsInVersion());
+  if (MS.pub) MS.pub.render();
+  renderAll();
+  toast(set.size ? `Auswahl: ${set.size} Template${set.size > 1 ? 's' : ''}` : 'Template-Auswahl aufgehoben – alle Templates');
+}
+function setTplSheet(open) {
+  document.body.classList.toggle('tpl-open', open);
+  $('#tplToggle').setAttribute('aria-expanded', open);
+  if (open) { renderTplNav(); $('#tplNav').scrollTop = 0; }
+}
+function renderTplNav() {
+  const el = $('#tplNav'); if (!el) return;
+  const q = navQuality(), tpl = q.tpl, sel = S.tplFilter;
+  const sevOf = t => { const iss = q.issues.filter(i => i.pub === t.p.id && i.fmt === t.f.id && i.type !== 'template' && i.type !== 'review');
+    return t.status === 'ausstehend' || iss.some(i => i.sev === 'r') ? 'r' : t.status === 'in Prüfung' || iss.length ? 'y' : 'g'; };
+  const pubs = [...new Map(tpl.map(t => [t.p.id, t.p])).values()];
+  const box = st => `<span class="cb ${st}" aria-hidden="true">${st === 'all' ? '✓' : st === 'part' ? '–' : ''}</span>`;
+  el.innerHTML = (sel.size ? `<div class="tpl-selbar"><span>${sel.size} ausgewählt</span><button type="button" id="tplClear" aria-label="Auswahl aufheben">✕ aufheben</button></div>` : '<div class="tpl-hint">Klicken, um Templates auszuwählen</div>') + pubs.map(p => {
+    const ts = tpl.filter(t => t.p.id === p.id), rec = ts.filter(t => t.status !== 'ausstehend').length, sv = ts.map(sevOf);
+    const ps = sv.includes('r') ? 'r' : sv.includes('y') ? 'y' : 'g', open = S.navOpen.has(p.id);
+    const nSel = ts.filter(t => sel.has(t.key)).length, pst = nSel === 0 ? 'none' : nSel === ts.length ? 'all' : 'part';
+    return `<div class="tpl-pub ${open ? 'open' : ''} ${nSel ? 'on' : ''}">
+        <button type="button" class="tpl-chev" data-open="${p.id}" aria-expanded="${open}" aria-label="${esc(p.name)} auf-/zuklappen"><span class="chev">▶</span></button>
+        <button type="button" class="tpl-pubsel tip-hover-only" data-selpub="${p.id}" aria-pressed="${pst === 'all'}"${tipAttr(`<b>${esc(p.name)}</b>${p.segment ? ' · ' + esc(p.segment) : ''}<br>${rec} von ${ts.length} Templates eingegangen<br><i>Klick: alle Werbeformen von ${esc(p.name)} ${pst === 'all' ? 'abwählen' : 'auswählen'}</i>`)}>${box(pst)}<span class="dot ${ps}"></span>${esc(p.name)}<span class="cnt">${nSel ? nSel + ' von ' : ''}${ts.length}</span></button>
+      </div>
+      <div class="tpl-items">${ts.map((t, k) => { const on = sel.has(t.key);
+        return `<button type="button" class="tpl-item tip-hover-only ${on ? 'on' : ''}" data-key="${t.key}" aria-pressed="${on}"${tipAttr(`<b>${esc(p.name)} – ${esc(t.f.name)}</b><br>Status: ${esc(t.status)}${t.fallback ? ' (Fallback ' + esc(VER[t.fallback].label) + ')' : ''}${t.updated ? '<br>Aktualisiert: ' + esc(t.updated) : ''}<br><i>Klick: ${on ? 'aus Auswahl entfernen' : 'zur Auswahl hinzufügen'}</i>`)}>${box(on ? 'all' : 'none')}<span class="dot ${sv[k]}"></span>${esc(t.f.name)}</button>`; }).join('')}</div>`;
+  }).join('');
+  $('#tplNavCount').textContent = `${q.received}/${q.total}`;
+  $('#tplToggleN').textContent = sel.size ? String(sel.size) : '';
+  $$('#tplNav [data-open]').forEach(b => b.onclick = () => { const id = b.dataset.open; S.navOpen.has(id) ? S.navOpen.delete(id) : S.navOpen.add(id); renderTplNav(); });
+  $$('#tplNav [data-selpub]').forEach(b => b.onclick = () => {
+    const id = b.dataset.selpub, keys = tpl.filter(t => t.p.id === id).map(t => t.key), s2 = new Set(sel);
+    const all = keys.every(k => s2.has(k)); keys.forEach(k => all ? s2.delete(k) : s2.add(k)); S.navOpen.add(id); setTplFilter(s2);
+  });
+  $$('#tplNav [data-key]').forEach(b => b.onclick = () => { const s2 = new Set(sel); s2.has(b.dataset.key) ? s2.delete(b.dataset.key) : s2.add(b.dataset.key); setTplFilter(s2); });
+  if ($('#tplClear')) $('#tplClear').onclick = () => setTplFilter(new Set());
+}
 function renderAll() {
   try { renderHeader(); } catch (e) { console.error(e); }
+  try { renderTplNav(); } catch (e) { console.error(e); }
   syncNav();
   try { PAGES[S.page](); } catch (e) { console.error(e); $('#page-' + S.page).innerHTML = `<div class="card empty">Fehler bei der Darstellung: ${esc(e.message)}</div>`; }
   updateChatCtx(); renderSuggestions();
 }
 function initNav() {
+  $('#tplToggle').onclick = () => setTplSheet(!document.body.classList.contains('tpl-open'));
+  $('#tplDone').onclick = () => setTplSheet(false);
+  $('#tplBackdrop').onclick = () => setTplSheet(false);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.body.classList.contains('tpl-open')) setTplSheet(false); });
+  $$('#nav [data-step]').forEach(b => b.onclick = () => { const [pg, tab] = b.dataset.step.split(':'); S.page = pg; if (tab) S.sapTab = tab; renderAll(); $('#main').scrollTop = 0; $$('#nav [data-step]').forEach(x => x.classList.toggle('on', x === b)); });
   $$('#nav button[data-page]').forEach(b => b.onclick = () => { S.page = b.dataset.page; renderAll(); $('#main').scrollTop = 0; });
 }
 let _rz; window.addEventListener('resize', () => { clearTimeout(_rz); _rz = setTimeout(() => { if (S.page === 'scenario') renderScenarioResults(); else PAGES[S.page](); }, 180); });
